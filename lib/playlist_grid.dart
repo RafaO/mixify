@@ -59,15 +59,14 @@ class _PlaylistGridState extends State<PlaylistGrid> {
               child: IconButton(
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) =>
-                        PlaylistSelector(
-                          accessToken: widget.accessToken,
-                          onPlaylistAdded: (playlist) {
-                            setState(() {
-                              playlists.add(playlist);
-                            });
-                          },
-                        ),
+                    builder: (context) => PlaylistSelector(
+                      accessToken: widget.accessToken,
+                      onPlaylistAdded: (playlist) {
+                        setState(() {
+                          playlists.add(playlist);
+                        });
+                      },
+                    ),
                   ));
                 },
                 icon: const Icon(Icons.add),
@@ -116,8 +115,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
               // add song to queue
               final response = await http.post(
                 Uri.parse(
-                    'https://api.spotify.com/v1/me/player/queue?uri=${song
-                        .id}&device_id=$deviceId'),
+                    'https://api.spotify.com/v1/me/player/queue?uri=${song.id}&device_id=$deviceId'),
                 headers: {
                   'Authorization': 'Bearer ${widget.accessToken}',
                 },
@@ -159,8 +157,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
 
   Future<String> currentTrack() async {
     final response = await http.get(
-      Uri.parse(
-          'https://api.spotify.com/v1/me/player/currently-playing'),
+      Uri.parse('https://api.spotify.com/v1/me/player/currently-playing'),
       headers: {
         'Authorization': 'Bearer ${widget.accessToken}',
       },
