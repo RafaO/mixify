@@ -40,15 +40,41 @@ class _PlaylistGridState extends State<PlaylistGrid> {
             final playlist = playlists[index];
             return Card(
               elevation: 4.0,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Icon(Icons.library_music),
-                  const SizedBox(height: 8.0),
-                  Text(
-                    playlist['name'],
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+              child: Stack(
+                children: [
+                  if (playlist['images'] != null &&
+                      playlist['images'].isNotEmpty)
+                    Image.network(
+                      playlist['images'][0]['url'],
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.7),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 10,
+                    right: 10,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        playlist['name'],
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
