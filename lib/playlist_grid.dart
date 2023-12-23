@@ -127,6 +127,8 @@ class _PlaylistGridState extends State<PlaylistGrid> {
             // advice the user to open the spotify app in any device
             // get user's devices (for now this only returns the active devices)
             // https://community.spotify.com/t5/Spotify-for-Developers/v1-me-player-devices-returns-empty-array/m-p/5224904/thread-id/2752
+            if (!context.mounted) return;
+            _showAlertDialog(context);
           }
 
           if (deviceId.isNotEmpty) {
@@ -168,6 +170,27 @@ class _PlaylistGridState extends State<PlaylistGrid> {
         },
         child: const Icon(Icons.play_arrow),
       ),
+    );
+  }
+
+  void _showAlertDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Could not start'),
+          content: const Text(
+              'Please start your Spotify app in any device and try again.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
