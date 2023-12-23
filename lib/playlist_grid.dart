@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mixify/playlist_card.dart';
 import 'package:mixify/playlist_selector.dart';
 import 'package:mixify/spotify_helper.dart';
 
@@ -38,46 +39,13 @@ class _PlaylistGridState extends State<PlaylistGrid> {
         itemBuilder: (context, index) {
           if (index < playlists.length) {
             final playlist = playlists[index];
-            return Card(
-              elevation: 4.0,
-              child: Stack(
-                children: [
-                  if (playlist['images'] != null &&
-                      playlist['images'].isNotEmpty)
-                    Image.network(
-                      playlist['images'][0]['url'],
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    ),
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withOpacity(0.7),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 10,
-                    right: 10,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        playlist['name'],
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            return PlaylistCard(
+              playlist: playlist,
+              onRemove: (playlistToRemove) {
+                setState(() {
+                  playlists.remove(playlistToRemove);
+                });
+              },
             );
           } else {
             return Card(
