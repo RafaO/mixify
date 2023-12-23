@@ -27,7 +27,7 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
   }
 
   Future<void> fetchPlaylists() async {
-    const url = 'https://api.spotify.com/v1/me/playlists';
+    const url = 'https://api.spotify.com/v1/me/playlists?limit=50&offset=0';
 
     final response = await http.get(
       Uri.parse(url),
