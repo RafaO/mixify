@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:mixify/api_service.dart';
 import 'package:mixify/auth_view.dart';
 import 'package:mixify/playlist_grid.dart';
+import 'package:mixify/token_manager.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
 Future main() async {
@@ -21,13 +22,14 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const MyHomePage(title: "Mixify"));
+        home: MyHomePage(title: "Mixify"));
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  MyHomePage({super.key, required this.title});
 
+  final TokenManager _tokenManager = TokenManager();
   final String title;
 
   @override
@@ -35,31 +37,29 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String spotifyToken = '';
-  final storage = const FlutterSecureStorage();
+  late final APIService _apiService;
+
+  bool authenticated = false;
 
   @override
   void initState() {
     super.initState();
-    getTokenFromStorage().then((token) {
-      setState(() {
-        spotifyToken = token ?? '';
-      });
+    _apiService = APIService(
+        onUnauthorised: () {
+          // Navigate to the auth screen
+          setState(() {
+            authenticated = false;
+            Navigator.popUntil(context, ModalRoute.withName('/'));
+          });
+        },
+        tokenManager: widget._tokenManager);
+    widget._tokenManager.getTokenFromStorage().then((token) {
+      if (token != null && token.isNotEmpty) {
+        setState(() {
+          authenticated = true;
+        });
+      }
     });
-  }
-
-  Future<String?> getTokenFromStorage() async {
-    return await storage.read(key: 'spotifyToken');
-  }
-
-  Future<void> saveTokenToStorage(String token) async {
-    await storage.write(key: 'spotifyToken', value: token);
-  }
-
-  bool isTokenValid() {
-    // Implement your logic to check the token's validity here
-    // For demonstration purposes, let's assume the token is valid if it's not empty
-    return spotifyToken.isNotEmpty;
   }
 
   Future<void> authenticateWithSpotify() async {
@@ -77,9 +77,9 @@ class _MyHomePageState extends State<MyHomePage> {
       redirectUrl: redirectUri,
       scope: scope,
     );
-    saveTokenToStorage(accessToken);
+    widget._tokenManager.saveTokenToStorage(accessToken);
     setState(() {
-      spotifyToken = accessToken;
+      authenticated = true;
     });
   }
 
@@ -90,8 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: isTokenValid()
-          ? PlaylistGrid(accessToken: spotifyToken)
+      body: authenticated
+          ? PlaylistGrid(apiService: _apiService)
           : AuthView(onButtonPressed: authenticateWithSpotify),
     );
   }

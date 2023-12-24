@@ -1,15 +1,13 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:mixify/api_service.dart';
 
 class PlaylistSelector extends StatefulWidget {
   final Function(dynamic) onPlaylistAdded;
-  final String accessToken;
+  final APIService apiService;
 
   const PlaylistSelector({
     Key? key,
-    required this.accessToken,
+    required this.apiService,
     required this.onPlaylistAdded,
   }) : super(key: key);
 
@@ -23,27 +21,9 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
   @override
   void initState() {
     super.initState();
-    fetchPlaylists();
-  }
-
-  Future<void> fetchPlaylists() async {
-    const url = 'https://api.spotify.com/v1/me/playlists?limit=50&offset=0';
-
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {
-        'Authorization': 'Bearer ${widget.accessToken}',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      setState(() {
-        playlists = List<Map<String, dynamic>>.from(data['items']);
-      });
-    } else {
-      print('Failed to load playlists: ${response.statusCode}');
-    }
+    widget.apiService
+        .fetchPlaylists()
+        .then((value) => setState(() => playlists = value));
   }
 
   @override
