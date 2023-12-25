@@ -9,7 +9,7 @@ class SpotifyHelper {
     List<Map<String, dynamic>> playlists,
     void Function() onError,
   ) async {
-    String deviceId = await _apiService.getActiveDevice(onError);
+    String deviceId = await _apiService.getActiveDevice();
 
     if (deviceId.isNotEmpty) {
       final listOfSongs = await _apiService.fetchAllSongsFromPlaylists(
@@ -29,6 +29,8 @@ class SpotifyHelper {
           _apiService.play(deviceId);
         }
       }
+    } else {
+      onError();
     }
   }
 }

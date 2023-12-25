@@ -69,7 +69,7 @@ class APIService {
     }
   }
 
-  Future<String> getActiveDevice(void Function() onError) async {
+  Future<String> getActiveDevice() async {
     final response = await _dio.get('/v1/me/player/devices');
 
     String deviceId = '';
@@ -86,10 +86,7 @@ class APIService {
       //   deviceId = activeDevice['id'];
       // }
     } else {
-      // advice the user to open the spotify app in any device
-      // get user's devices (for now this only returns the active devices)
-      // https://community.spotify.com/t5/Spotify-for-Developers/v1-me-player-devices-returns-empty-array/m-p/5224904/thread-id/2752
-      onError();
+      return '';
     }
     return deviceId;
   }
