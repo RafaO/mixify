@@ -38,6 +38,13 @@ dependencies:
   flutter_secure_storage: ^9.0.0
   flutter_dotenv: ^5.1.0
   dio: ^4.0.4
+  flutter_native_splash: ^2.3.8
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/headphones.png"
 
 dev_dependencies:
   flutter_test:
