@@ -26,7 +26,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Spotify Playlists'),
+        title: const Text('Mixify'),
       ),
       body: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
