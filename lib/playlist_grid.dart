@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:mixify/api_service.dart';
 import 'package:mixify/playlist_card.dart';
 import 'package:mixify/playlist_selector.dart';
