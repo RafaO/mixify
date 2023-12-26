@@ -64,7 +64,7 @@ class APIService {
     if (response.statusCode == 200) {
       return List<Map<String, dynamic>>.from(response.data['items']);
     } else {
-      print('Failed to load playlists: ${response.statusCode}');
+      debugPrint('Failed to load playlists: ${response.statusCode}');
       return List.empty();
     }
   }
