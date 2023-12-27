@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
       redirectUrl: redirectUri,
       scope: scope,
     );
-    widget._tokenManager.saveTokenToStorage(accessToken);
+    widget._tokenManager.tokenReceived(accessToken);
     setState(() {
       authenticated = true;
     });
@@ -86,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return authenticated
-          ? PlaylistGrid(apiService: _apiService)
-          : AuthView(onButtonPressed: authenticateWithSpotify);
+        ? PlaylistGrid(apiService: _apiService)
+        : AuthView(onButtonPressed: authenticateWithSpotify);
   }
 }

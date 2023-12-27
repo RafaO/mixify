@@ -26,6 +26,7 @@ class APIService {
       onError: (DioError error, handler) {
         if (error.response?.statusCode == 401) {
           debugPrint('Token expired. Please re-login.');
+          tokenManager.expired();
           onUnauthorised();
         }
         return handler.next(error);
