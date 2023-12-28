@@ -43,8 +43,7 @@ class APIService {
   }
 
   Future<void> addSongToQueue(String songId, String deviceId) async {
-    await _dio.post(
-        'https://api.spotify.com/v1/me/player/queue?uri=$songId&device_id=$deviceId');
+    await _dio.post('/v1/me/player/queue?uri=$songId&device_id=$deviceId');
   }
 
   Future<void> skipToNextSong(String deviceId) async {
