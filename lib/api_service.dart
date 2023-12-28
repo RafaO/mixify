@@ -35,7 +35,11 @@ class APIService {
   }
 
   Future<void> play(String deviceId) async {
-    await _dio.put('/v1/me/player/play?device_id=$deviceId');
+    _dio.put('/v1/me/player/play?device_id=$deviceId');
+  }
+
+  Future<void> pause(String deviceId) async {
+    await _dio.put("/v1/me/player/pause?device_id=$deviceId");
   }
 
   Future<void> addSongToQueue(String songId, String deviceId) async {
