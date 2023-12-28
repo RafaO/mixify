@@ -68,15 +68,18 @@ class _PlaylistGridState extends State<PlaylistGrid> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          SpotifyHelper(apiService: widget.apiService).playMix(playlists, () {
-            // advice the user to open the spotify app in any device
-            // get user's devices (for now this only returns the active devices)
-            // https://community.spotify.com/t5/Spotify-for-Developers/v1-me-player-devices-returns-empty-array/m-p/5224904/thread-id/2752
-            if (!context.mounted) return;
-            _showAlertDialog(context);
-          });
-        },
+        onPressed: playlists.isEmpty
+            ? null
+            : () async {
+                SpotifyHelper(apiService: widget.apiService).playMix(playlists,
+                    () {
+                  // advice the user to open the spotify app in any device
+                  // get user's devices (for now this only returns the active devices)
+                  // https://community.spotify.com/t5/Spotify-for-Developers/v1-me-player-devices-returns-empty-array/m-p/5224904/thread-id/2752
+                  if (!context.mounted) return;
+                  _showAlertDialog(context);
+                });
+              },
         child: const Icon(Icons.play_arrow),
       ),
     );
