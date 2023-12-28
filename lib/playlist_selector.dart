@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mixify/api_service.dart';
+import 'package:mixify/entities/SpotifyPlaylist.dart';
 
 class PlaylistSelector extends StatefulWidget {
   final Function(dynamic) onPlaylistAdded;
@@ -16,8 +17,8 @@ class PlaylistSelector extends StatefulWidget {
 }
 
 class _PlaylistSelectorState extends State<PlaylistSelector> {
-  late List<Map<String, dynamic>> playlists;
-  late List<Map<String, dynamic>> filteredPlaylists;
+  late List<SpotifyPlaylist> playlists;
+  late List<SpotifyPlaylist> filteredPlaylists;
 
   TextEditingController searchController = TextEditingController();
 
@@ -30,7 +31,7 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
   }
 
   Future<void> _fetchPlaylists() async {
-    List<Map<String, dynamic>> fetchedPlaylists =
+    List<SpotifyPlaylist> fetchedPlaylists =
         await widget.apiService.fetchPlaylists();
     setState(() {
       playlists = fetchedPlaylists;
@@ -39,8 +40,8 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
   }
 
   void _filterPlaylists(String query) {
-    List<Map<String, dynamic>> filtered = playlists
-        .where((playlist) => playlist['name']
+    List<SpotifyPlaylist> filtered = playlists
+        .where((playlist) => playlist.name
             .toString()
             .toLowerCase()
             .contains(query.toLowerCase()))
@@ -82,9 +83,9 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
                     itemBuilder: (context, index) {
                       final playlist = filteredPlaylists[index];
                       return ListTile(
-                        title: Text(playlist['name']),
+                        title: Text(playlist.name),
                         subtitle:
-                            Text(playlist['description'] ?? 'No description'),
+                            Text(playlist.description ?? 'No description'),
                         onTap: () {
                           widget.onPlaylistAdded(playlist);
                           Navigator.pop(context);

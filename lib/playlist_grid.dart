@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mixify/api_service.dart';
+import 'package:mixify/entities/SpotifyPlaylist.dart';
 import 'package:mixify/playlist_card.dart';
 import 'package:mixify/playlist_selector.dart';
 import 'package:mixify/spotify_helper.dart';
@@ -14,7 +15,7 @@ class PlaylistGrid extends StatefulWidget {
 }
 
 class _PlaylistGridState extends State<PlaylistGrid> {
-  List<Map<String, dynamic>> playlists = [];
+  List<SpotifyPlaylist> playlists = [];
 
   @override
   void initState() {

@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mixify/api_service.dart';
+import 'package:mixify/entities/SpotifyPlaylist.dart';
+import 'package:mixify/entities/SpotifySong.dart';
 
 class SpotifyHelper {
   final APIService _apiService;
@@ -8,7 +10,7 @@ class SpotifyHelper {
   SpotifyHelper({required APIService apiService}) : _apiService = apiService;
 
   void playMix(
-    List<Map<String, dynamic>> playlists,
+    List<SpotifyPlaylist> playlists,
     void Function() onError,
   ) async {
     String deviceId = await _apiService.getActiveDevice();
@@ -19,7 +21,7 @@ class SpotifyHelper {
     }
 
     final listOfSongs = await _apiService.fetchAllSongsFromPlaylists(
-      playlists.map((playlist) => playlist['id'] as String).toList(),
+      playlists.map((playlist) => playlist.id).toList(),
     );
 
     bool isFirstSong = true;

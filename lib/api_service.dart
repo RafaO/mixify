@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:mixify/entities/SpotifyPlaylist.dart';
+import 'package:mixify/entities/SpotifySong.dart';
 import 'package:mixify/token_manager.dart';
 
 class APIService {
@@ -60,13 +62,32 @@ class APIService {
     return response.data['item']['uri'];
   }
 
-  Future<List<Map<String, dynamic>>> fetchPlaylists() async {
+  Future<List<SpotifyPlaylist>> fetchPlaylists() async {
     const url = '/v1/me/playlists?limit=50&offset=0';
 
     final response = await _dio.get(url);
 
     if (response.statusCode == 200) {
-      return List<Map<String, dynamic>>.from(response.data['items']);
+      List<dynamic> items = response.data['items'];
+      List<SpotifyPlaylist> playlists = [];
+
+      for (var item in items) {
+        playlists.add(SpotifyPlaylist(
+            id: item['id'],
+            name: item['name'],
+            description: item['description'],
+            imageUrl: item['images']?[0]['url']));
+        // != null && playlist['images'].isNotEmpty ?
+        //     if ()
+        //   Image.network(
+        //   playlist['images'][0]['url'],
+        //   fit: BoxFit.cover,
+        //   width: double.infinity,
+        // ),
+        // ));
+      }
+
+      return playlists;
     } else {
       debugPrint('Failed to load playlists: ${response.statusCode}');
       return List.empty();
@@ -142,12 +163,4 @@ class APIService {
       throw Exception('Failed to load playlist songs: ${response.statusCode}');
     }
   }
-}
-
-class SpotifySong {
-  final String name;
-  final String artist;
-  final String id;
-
-  SpotifySong(this.id, {required this.name, required this.artist});
 }

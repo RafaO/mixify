@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:mixify/entities/SpotifyPlaylist.dart';
 
 class PlaylistCard extends StatelessWidget {
-  final dynamic playlist;
+  final SpotifyPlaylist playlist;
   final Function(dynamic) onRemove;
 
   const PlaylistCard({
     super.key,
-    @required this.playlist,
+    required this.playlist,
     required this.onRemove,
   });
 
@@ -16,9 +17,9 @@ class PlaylistCard extends StatelessWidget {
       elevation: 4.0,
       child: Stack(
         children: [
-          if (playlist['images'] != null && playlist['images'].isNotEmpty)
+          if (playlist.imageUrl != null)
             Image.network(
-              playlist['images'][0]['url'],
+              playlist.imageUrl!!,
               fit: BoxFit.cover,
               width: double.infinity,
             ),
@@ -65,7 +66,7 @@ class PlaylistCard extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                playlist['name'],
+                playlist.name,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
