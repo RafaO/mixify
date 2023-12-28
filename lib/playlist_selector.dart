@@ -16,14 +16,38 @@ class PlaylistSelector extends StatefulWidget {
 }
 
 class _PlaylistSelectorState extends State<PlaylistSelector> {
-  List<Map<String, dynamic>> playlists = [];
+  late List<Map<String, dynamic>> playlists;
+  late List<Map<String, dynamic>> filteredPlaylists;
+
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    widget.apiService
-        .fetchPlaylists()
-        .then((value) => setState(() => playlists = value));
+    playlists = [];
+    filteredPlaylists = [];
+    _fetchPlaylists();
+  }
+
+  Future<void> _fetchPlaylists() async {
+    List<Map<String, dynamic>> fetchedPlaylists =
+        await widget.apiService.fetchPlaylists();
+    setState(() {
+      playlists = fetchedPlaylists;
+      filteredPlaylists = fetchedPlaylists;
+    });
+  }
+
+  void _filterPlaylists(String query) {
+    List<Map<String, dynamic>> filtered = playlists
+        .where((playlist) => playlist['name']
+            .toString()
+            .toLowerCase()
+            .contains(query.toLowerCase()))
+        .toList();
+    setState(() {
+      filteredPlaylists = filtered;
+    });
   }
 
   @override
@@ -32,24 +56,45 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
       appBar: AppBar(
         title: const Text('Spotify Playlists'),
       ),
-      body: playlists.isEmpty
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : ListView.builder(
-              itemCount: playlists.length,
-              itemBuilder: (context, index) {
-                final playlist = playlists[index];
-                return ListTile(
-                  title: Text(playlist['name']),
-                  subtitle: Text(playlist['description'] ?? 'No description'),
-                  onTap: () {
-                    widget.onPlaylistAdded(playlist);
-                    Navigator.pop(context);
-                  },
-                );
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: searchController,
+              onChanged: (value) {
+                _filterPlaylists(value);
               },
+              decoration: const InputDecoration(
+                labelText: 'Search Playlists',
+                hintText: 'Enter playlist name...',
+                prefixIcon: Icon(Icons.search),
+              ),
             ),
+          ),
+          Expanded(
+            child: filteredPlaylists.isEmpty
+                ? const Center(
+                    child: Text("No playlist found"),
+                  )
+                : ListView.builder(
+                    itemCount: filteredPlaylists.length,
+                    itemBuilder: (context, index) {
+                      final playlist = filteredPlaylists[index];
+                      return ListTile(
+                        title: Text(playlist['name']),
+                        subtitle:
+                            Text(playlist['description'] ?? 'No description'),
+                        onTap: () {
+                          widget.onPlaylistAdded(playlist);
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }
