@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mixify/api_service.dart';
 
@@ -30,7 +31,13 @@ class SpotifyHelper {
         debugPrint("first song is: ${song.name}");
 
         isFirstSong = false;
-        await _apiService.pause(deviceId);
+        try {
+          await _apiService.pause(deviceId);
+        } on DioError catch (e) {
+          if (e.response?.statusCode == 403) {
+            // do nothing, the player is already paused
+          }
+        }
         while (await _apiService.currentTrack() != song.id) {
           await _apiService.skipToNextSong(deviceId);
         }
