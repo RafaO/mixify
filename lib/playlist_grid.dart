@@ -54,11 +54,13 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => PlaylistSelector(
                       apiService: widget.apiService,
-                      onPlaylistAdded: (playlist) {
+                      onSelectedPlaylists: (selectedPlaylists) {
                         setState(() {
-                          playlists.add(playlist);
+                          playlists.clear();
+                          playlists.addAll(selectedPlaylists);
                         });
                       },
+                      alreadySelectedPlaylists: playlists,
                     ),
                   ));
                 },

@@ -3,13 +3,15 @@ import 'package:mixify/api_service.dart';
 import 'package:mixify/entities/SpotifyPlaylist.dart';
 
 class PlaylistSelector extends StatefulWidget {
-  final Function(dynamic) onPlaylistAdded;
+  final Function(List<SpotifyPlaylist>) onSelectedPlaylists;
   final APIService apiService;
+  final List<SpotifyPlaylist> alreadySelectedPlaylists;
 
   const PlaylistSelector({
     Key? key,
     required this.apiService,
-    required this.onPlaylistAdded,
+    required this.onSelectedPlaylists,
+    required this.alreadySelectedPlaylists,
   }) : super(key: key);
 
   @override
@@ -19,6 +21,7 @@ class PlaylistSelector extends StatefulWidget {
 class _PlaylistSelectorState extends State<PlaylistSelector> {
   late List<SpotifyPlaylist> playlists;
   late List<SpotifyPlaylist> filteredPlaylists;
+  late List<SpotifyPlaylist> selectedPlaylists;
 
   TextEditingController searchController = TextEditingController();
 
@@ -28,6 +31,7 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
     playlists = [];
     filteredPlaylists = [];
     _fetchPlaylists();
+    selectedPlaylists = List.from(widget.alreadySelectedPlaylists);
   }
 
   Future<void> _fetchPlaylists() async {
@@ -36,6 +40,7 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
     setState(() {
       playlists = fetchedPlaylists;
       filteredPlaylists = fetchedPlaylists;
+      selectedPlaylists = List.from(widget.alreadySelectedPlaylists);
     });
   }
 
@@ -51,11 +56,30 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
     });
   }
 
+  void _togglePlaylistSelection(SpotifyPlaylist playlist) {
+    setState(() {
+      if (selectedPlaylists.contains(playlist)) {
+        selectedPlaylists.remove(playlist);
+      } else {
+        selectedPlaylists.add(playlist);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Spotify Playlists'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: () {
+              widget.onSelectedPlaylists(selectedPlaylists);
+              Navigator.pop(context);
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -82,14 +106,22 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
                     itemCount: filteredPlaylists.length,
                     itemBuilder: (context, index) {
                       final playlist = filteredPlaylists[index];
+                      final isSelected = selectedPlaylists.contains(playlist);
                       return ListTile(
                         title: Text(playlist.name),
                         subtitle:
                             Text(playlist.description ?? 'No description'),
                         onTap: () {
-                          widget.onPlaylistAdded(playlist);
-                          Navigator.pop(context);
+                          _togglePlaylistSelection(playlist);
                         },
+                        trailing: isSelected
+                            ? IconButton(
+                                icon: const Icon(Icons.check),
+                                onPressed: () {
+                                  _togglePlaylistSelection(playlist);
+                                },
+                              )
+                            : null,
                       );
                     },
                   ),
