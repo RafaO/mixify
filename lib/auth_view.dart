@@ -18,6 +18,12 @@ class AuthView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Image.asset(
+              'assets/Spotify_Icon_CMYK_Black.png',
+              width: 100.0,
+              height: 100.0,
+            ),
+            const SizedBox(height: 50),
             Center(
               child: ElevatedButton(
                 onPressed: () => onButtonPressed(),

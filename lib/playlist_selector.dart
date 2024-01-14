@@ -70,7 +70,17 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Spotify Playlists'),
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/Spotify_Icon_CMYK_Black.png',
+              width: 24.0,
+              height: 24.0,
+            ),
+            const SizedBox(width: 10),
+            const Text('Spotify Playlists'),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.check),

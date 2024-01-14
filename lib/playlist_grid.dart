@@ -70,7 +70,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: playlists.isEmpty
             ? null
             : () async {
@@ -83,7 +83,13 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                   _showAlertDialog(context);
                 });
               },
-        child: const Icon(Icons.play_arrow),
+          icon: Image.asset(
+            'assets/Spotify_Icon_CMYK_Black.png',
+            width: 24.0,
+            height: 24.0,
+          ),
+        // icon: const Icon(Icons.play_arrow),
+        label: const Text("Play on Spotify")
       ),
     );
   }
