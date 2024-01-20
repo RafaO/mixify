@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mixify/entities/SpotifyPlaylist.dart';
@@ -52,14 +54,21 @@ class APIService {
     await _dio.post('/v1/me/player/next?device_id=$deviceId');
   }
 
-  Future<String> currentTrack() async {
+  Future<SpotifySong?> currentTrack() async {
     final response = await _dio.get('/v1/me/player/currently-playing');
 
     if (response.statusCode != 200) {
-      return '';
+      return null;
     }
 
-    return response.data['item']['uri'];
+    final data = response.data;
+    final artists = data['item']['artists'] as List<dynamic>;
+    final artistNames = artists.map((artist) => artist['name']).join(', ');
+    return SpotifySong(
+      data['item']['uri'],
+      name: data['item']['name'],
+      artist: artistNames,
+    );
   }
 
   Future<List<SpotifyPlaylist>> fetchPlaylists() async {
@@ -116,19 +125,56 @@ class APIService {
     return deviceId;
   }
 
-  Future<List<SpotifySong>> fetchAllSongsFromPlaylists(
+  List<SpotifySong> mixAndAppendMultipleListsRecursive(
+      List<List<SpotifySong>> lists) {
+    List<SpotifySong> result = [];
+
+    // Find the size of the shortest list
+    int minLength = lists.map((list) => list.length).reduce(min);
+
+    // Combine elements randomly up to the size of the shortest list
+    List<int> indices =
+        List.generate(minLength * lists.length, (index) => index);
+    indices.shuffle();
+
+    for (int i = 0; i < minLength * lists.length; i++) {
+      int listIndex = indices[i] % lists.length;
+      int elementIndex = indices[i] ~/ lists.length;
+      result.add(lists[listIndex][elementIndex]);
+    }
+
+    // Create a list of remaining lists
+    List<List<SpotifySong>> remainingLists = [];
+    for (int j = 0; j < lists.length; j++) {
+      if (lists[j].length > minLength) {
+        remainingLists.add(lists[j].sublist(minLength));
+      }
+    }
+
+    // Recursively mix and append the remaining lists
+    if (remainingLists.length > 1) {
+      result.addAll(mixAndAppendMultipleListsRecursive(remainingLists));
+    } else if (remainingLists.length == 1) {
+      // If there's only one list left, append its elements
+      result.addAll(remainingLists[0]);
+    }
+
+    return result;
+  }
+
+  Future<List<SpotifySong>> fetchAndMixAllSongsFromPlaylists(
     List<String> playlistIds,
   ) async {
-    List<SpotifySong> allSongs = [];
+    List<List<SpotifySong>> songsLists = [];
 
     for (String playlistId in playlistIds) {
       final playlistSongs = await _fetchSongsFromPlaylist(playlistId);
-      allSongs.addAll(playlistSongs);
+      songsLists.add(playlistSongs);
     }
 
-    allSongs.shuffle();
+    final result = mixAndAppendMultipleListsRecursive(songsLists);
 
-    return allSongs;
+    return result;
   }
 
   Future<List<SpotifySong>> _fetchSongsFromPlaylist(

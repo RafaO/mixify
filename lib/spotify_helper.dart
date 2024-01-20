@@ -20,7 +20,7 @@ class SpotifyHelper {
       return;
     }
 
-    final listOfSongs = await _apiService.fetchAllSongsFromPlaylists(
+    final listOfSongs = await _apiService.fetchAndMixAllSongsFromPlaylists(
       playlists.map((playlist) => playlist.id).toList(),
     );
 
@@ -40,7 +40,10 @@ class SpotifyHelper {
             // do nothing, the player is already paused
           }
         }
-        while (await _apiService.currentTrack() != song.id) {
+        SpotifySong? currentTrack;
+        while ((currentTrack = await _apiService.currentTrack())?.id != song.id) {
+          debugPrint("skipping to next song");
+          debugPrint("the song ${currentTrack?.name} is different from ${song.name}");
           await _apiService.skipToNextSong(deviceId);
         }
         _apiService.play(deviceId);
