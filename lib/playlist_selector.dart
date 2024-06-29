@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mixify/api_service.dart';
-import 'package:mixify/entities/SpotifyPlaylist.dart';
+import 'package:mixify/entities/spotify_playlist.dart';
 
 class PlaylistSelector extends StatefulWidget {
   final Function(List<SpotifyPlaylist>) onSelectedPlaylists;

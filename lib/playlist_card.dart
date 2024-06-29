@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mixify/entities/SpotifyPlaylist.dart';
+import 'package:mixify/entities/spotify_playlist.dart';
 
 class PlaylistCard extends StatelessWidget {
   final SpotifyPlaylist playlist;
@@ -19,7 +19,7 @@ class PlaylistCard extends StatelessWidget {
         children: [
           if (playlist.imageUrl != null)
             Image.network(
-              playlist.imageUrl!!,
+              playlist.imageUrl!,
               fit: BoxFit.cover,
               width: double.infinity,
             ),

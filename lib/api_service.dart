@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:mixify/entities/SpotifyPlaylist.dart';
-import 'package:mixify/entities/SpotifySong.dart';
+import 'package:mixify/entities/spotify_playlist.dart';
+import 'package:mixify/entities/spotify_song.dart';
 import 'package:mixify/token_manager.dart';
 
 class APIService {
