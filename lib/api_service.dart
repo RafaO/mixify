@@ -62,12 +62,9 @@ class APIService {
     }
 
     final data = response.data;
-    final artists = data['item']['artists'] as List<dynamic>;
-    final artistNames = artists.map((artist) => artist['name']).join(', ');
     return SpotifySong(
       data['item']['uri'],
       name: data['item']['name'],
-      artist: artistNames,
     );
   }
 
@@ -193,13 +190,10 @@ class APIService {
       for (var item in items) {
         final track = item['track'];
         final songName = track['name'];
-        final artists = track['artists'] as List<dynamic>;
-        final artistNames = artists.map((artist) => artist['name']).join(', ');
 
         final spotifySong = SpotifySong(
           track['uri'],
           name: songName,
-          artist: artistNames,
         );
         playlistSongs.add(spotifySong);
       }
