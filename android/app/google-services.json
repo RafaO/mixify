@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "727814898479",
+    "project_id": "mixify-cd066",
+    "storage_bucket": "mixify-cd066.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:727814898479:android:858b096249aa950d9d57da",
+        "android_client_info": {
+          "package_name": "com.keller.mixify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtCRcks9wL4-NTAaznYFdlxAI-5mCtLbc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
