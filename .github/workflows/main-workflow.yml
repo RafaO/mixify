@@ -62,6 +62,12 @@ jobs:
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
 
+      # Generate the .env file
+      - name: Generate .env file
+        env:
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+        run: echo "spotify_client_id=SPOTIFY_CLIENT_ID" > .env
+
       # Build Android release
       - run: flutter build appbundle --release
 
