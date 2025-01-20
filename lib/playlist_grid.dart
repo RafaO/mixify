@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mixify/api_service.dart';
 import 'package:mixify/entities/spotify_playlist.dart';
+import 'package:mixify/entities/time_range.dart';
 import 'package:mixify/playlist_card.dart';
 import 'package:mixify/playlist_selector.dart';
 import 'package:mixify/spotify_helper.dart';
@@ -71,26 +72,28 @@ class _PlaylistGridState extends State<PlaylistGrid> {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: playlists.isEmpty
-            ? null
-            : () async {
-                SpotifyHelper(apiService: widget.apiService).playMix(playlists,
+          onPressed: playlists.isEmpty
+              ? null
+              : () async {
+                  SpotifyHelper(apiService: widget.apiService).playMix(
+                    playlists,
+                    TimeRange.oneMonth(),
                     () {
-                  // advice the user to open the spotify app in any device
-                  // get user's devices (for now this only returns the active devices)
-                  // https://community.spotify.com/t5/Spotify-for-Developers/v1-me-player-devices-returns-empty-array/m-p/5224904/thread-id/2752
-                  if (!context.mounted) return;
-                  _showAlertDialog(context);
-                });
-              },
+                      // advice the user to open the spotify app in any device
+                      // get user's devices (for now this only returns the active devices)
+                      // https://community.spotify.com/t5/Spotify-for-Developers/v1-me-player-devices-returns-empty-array/m-p/5224904/thread-id/2752
+                      if (!context.mounted) return;
+                      _showAlertDialog(context);
+                    },
+                  );
+                },
           icon: Image.asset(
             'assets/Spotify_Icon_CMYK_Black.png',
             width: 24.0,
             height: 24.0,
           ),
-        // icon: const Icon(Icons.play_arrow),
-        label: const Text("Play on Spotify")
-      ),
+          // icon: const Icon(Icons.play_arrow),
+          label: const Text("Play on Spotify")),
     );
   }
 

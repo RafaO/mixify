@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mixify/api_service.dart';
 import 'package:mixify/entities/spotify_playlist.dart';
 import 'package:mixify/entities/spotify_song.dart';
+import 'package:mixify/entities/time_range.dart';
 
 class SpotifyHelper {
   final APIService _apiService;
@@ -11,6 +12,7 @@ class SpotifyHelper {
 
   void playMix(
     List<SpotifyPlaylist> playlists,
+    TimeRange timeRange,
     void Function() onError,
   ) async {
     String deviceId = await _apiService.getActiveDevice();
@@ -22,6 +24,7 @@ class SpotifyHelper {
 
     final listOfSongs = await _apiService.fetchAndMixAllSongsFromPlaylists(
       playlists.map((playlist) => playlist.id).toList(),
+      timeRange,
     );
 
     bool isFirstSong = true;
@@ -41,9 +44,11 @@ class SpotifyHelper {
           }
         }
         SpotifySong? currentTrack;
-        while ((currentTrack = await _apiService.currentTrack())?.id != song.id) {
+        while (
+            (currentTrack = await _apiService.currentTrack())?.id != song.id) {
           debugPrint("skipping to next song");
-          debugPrint("the song ${currentTrack?.name} is different from ${song.name}");
+          debugPrint(
+              "the song ${currentTrack?.name} is different from ${song.name}");
           await _apiService.skipToNextSong(deviceId);
         }
         _apiService.play(deviceId);

@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mixify/entities/spotify_playlist.dart';
 import 'package:mixify/entities/spotify_song.dart';
+import 'package:mixify/entities/time_range.dart';
 import 'package:mixify/token_manager.dart';
 
 class APIService {
@@ -161,11 +162,15 @@ class APIService {
 
   Future<List<SpotifySong>> fetchAndMixAllSongsFromPlaylists(
     List<String> playlistIds,
+    TimeRange timeRange,
   ) async {
     List<List<SpotifySong>> songsLists = [];
 
     for (String playlistId in playlistIds) {
-      final playlistSongs = await _fetchSongsFromPlaylist(playlistId);
+      final playlistSongs = await _fetchSongsFromPlaylist(
+        playlistId,
+        timeRange,
+      );
       songsLists.add(playlistSongs);
     }
 
@@ -176,31 +181,57 @@ class APIService {
 
   Future<List<SpotifySong>> _fetchSongsFromPlaylist(
     String playlistId,
+    TimeRange timeRange,
   ) async {
-    final url = '/v1/playlists/$playlistId/tracks';
+    final String baseUrl = '/v1/playlists/$playlistId/tracks';
+    List<SpotifySong> playlistSongs = [];
+    int offset = 0;
+    const int limit = 100; // Spotify's max limit per page
 
-    final response = await _dio.get(url);
+    final DateTime filterStartDate = timeRange.getStartDate();
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = response.data;
-      final List<dynamic> items = data['items'];
+    while (true) {
+      // Construct the request URL with pagination parameters
+      final response = await _dio.get(
+        baseUrl,
+        queryParameters: {
+          'limit': limit,
+          'offset': offset,
+        },
+      );
 
-      List<SpotifySong> playlistSongs = [];
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = response.data;
+        final List<dynamic> items = data['items'];
 
-      for (var item in items) {
-        final track = item['track'];
-        final songName = track['name'];
+        for (var item in items) {
+          final track = item['track'];
+          final songName = track['name'];
+          final addedAt = item['added_at'];
+          DateTime dateTime = DateTime.parse(addedAt);
 
-        final spotifySong = SpotifySong(
-          track['uri'],
-          name: songName,
-        );
-        playlistSongs.add(spotifySong);
+          final spotifySong = SpotifySong(
+            track['uri'],
+            name: songName,
+          );
+
+          // Filter by the time range
+          if (dateTime.isAfter(filterStartDate)) {
+            playlistSongs.add(spotifySong);
+          }
+        }
+
+        // Check if there are more pages
+        if (items.length < limit) {
+          break; // No more pages
+        }
+        offset += limit; // Move to the next page
+      } else {
+        throw Exception(
+            'Failed to load playlist songs: ${response.statusCode}');
       }
-
-      return playlistSongs;
-    } else {
-      throw Exception('Failed to load playlist songs: ${response.statusCode}');
     }
+
+    return playlistSongs;
   }
 }
