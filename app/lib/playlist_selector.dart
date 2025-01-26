@@ -22,6 +22,7 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
   late List<SpotifyPlaylist> playlists;
   late List<SpotifyPlaylist> filteredPlaylists;
   late List<SpotifyPlaylist> selectedPlaylists;
+  bool isLoading = true;
 
   TextEditingController searchController = TextEditingController();
 
@@ -41,6 +42,7 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
       playlists = fetchedPlaylists;
       filteredPlaylists = fetchedPlaylists;
       selectedPlaylists = List.from(widget.alreadySelectedPlaylists);
+      isLoading = false;
     });
   }
 
@@ -68,6 +70,10 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
 
   @override
   Widget build(BuildContext context) {
+    final onSurfaceColor = Theme.of(context).colorScheme.onSurface;
+    final hintTextColor =
+        onSurfaceColor.withOpacity(0.6); // Slightly faded for hint text
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -100,42 +106,79 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
               onChanged: (value) {
                 _filterPlaylists(value);
               },
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
+                filled: true,
+                // Use surface color for the background
                 labelText: 'Search Playlists',
+                labelStyle: TextStyle(color: onSurfaceColor),
+                // Label text color
                 hintText: 'Enter playlist name...',
-                prefixIcon: Icon(Icons.search),
+                hintStyle: TextStyle(color: hintTextColor),
+                // Faded hint text
+                prefixIcon: const Icon(Icons.search),
+                border: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
           ),
-          Expanded(
-            child: filteredPlaylists.isEmpty
-                ? const Center(
-                    child: Text("No playlist found"),
-                  )
-                : ListView.builder(
-                    itemCount: filteredPlaylists.length,
-                    itemBuilder: (context, index) {
-                      final playlist = filteredPlaylists[index];
-                      final isSelected = selectedPlaylists.contains(playlist);
-                      return ListTile(
-                        title: Text(playlist.name),
-                        subtitle:
-                            Text(playlist.description ?? 'No description'),
-                        onTap: () {
-                          _togglePlaylistSelection(playlist);
-                        },
-                        trailing: isSelected
-                            ? IconButton(
-                                icon: const Icon(Icons.check),
-                                onPressed: () {
-                                  _togglePlaylistSelection(playlist);
-                                },
-                              )
-                            : null,
-                      );
-                    },
-                  ),
-          ),
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Expanded(
+                  child: filteredPlaylists.isEmpty
+                      ? const Center(
+                          child: Text("No playlists found"),
+                        )
+                      : ListView.builder(
+                          itemCount: filteredPlaylists.length,
+                          itemBuilder: (context, index) {
+                            final playlist = filteredPlaylists[index];
+                            final isSelected =
+                                selectedPlaylists.contains(playlist);
+                            return Card(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                                vertical: 8.0,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                              elevation: 4.0,
+                              child: SizedBox(
+                                // height: 80.0, // Fixed height for each row
+                                child: ListTile(
+                                  leading: playlist.imageUrl != null
+                                      ? CircleAvatar(
+                                          backgroundImage:
+                                              NetworkImage(playlist.imageUrl!),
+                                        )
+                                      : const CircleAvatar(
+                                          backgroundColor: Colors.grey,
+                                          child: Icon(Icons.music_note),
+                                        ),
+                                  title: Text(
+                                    playlist.name,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  onTap: () {
+                                    _togglePlaylistSelection(playlist);
+                                  },
+                                  trailing: isSelected
+                                      ? const Icon(
+                                          Icons.check_circle,
+                                          color: Colors.green,
+                                        )
+                                      : const Icon(Icons.circle_outlined),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                ),
         ],
       ),
     );
