@@ -60,14 +60,12 @@ class _PlaylistGridState extends State<PlaylistGrid> {
               )
             : Column(
                 children: [
-                  // Time selection explanation label
                   const Text(
                     'Mixing songs added to the lists in the last...',
                     style: TextStyle(fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
-                  // Time selection bubble row
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -83,7 +81,6 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Check if playlists are available or show empty state
                   Expanded(
                     child: playlists.isEmpty
                         ? _buildEmptyState(context, theme)
@@ -122,14 +119,28 @@ class _PlaylistGridState extends State<PlaylistGrid> {
         onPressed: playlists.isEmpty
             ? null
             : () async {
-                SpotifyHelper(apiService: widget.apiService).playMix(
-                  playlists,
-                  selectedTimeRange,
-                  () {
-                    if (!context.mounted) return;
-                    _showAlertDialog(context);
-                  },
-                );
+                _showProgressDialog(context);
+
+                try {
+                  await SpotifyHelper(apiService: widget.apiService).playMix(
+                    playlists,
+                    selectedTimeRange,
+                    () {
+                      if (!context.mounted) return;
+                      Navigator.of(context).pop();
+                      _showAlertDialog(context);
+                    },
+                  );
+                  if (!context.mounted) return;
+                  Navigator.of(context).pop();
+                } catch (e) {
+                  Navigator.of(context).pop(); // Close progress dialog
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('An error occurred.'),
+                    ),
+                  );
+                }
               },
         icon: Image.asset(
           'assets/Spotify_Icon_CMYK_Black.png',
@@ -254,6 +265,35 @@ class _PlaylistGridState extends State<PlaylistGrid> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showProgressDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dismissing by tapping outside
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: const Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 20),
+                Text(
+                  'We are preparing your mix and sending it over to Spotify...',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16.0),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

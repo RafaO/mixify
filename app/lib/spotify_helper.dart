@@ -10,49 +10,70 @@ class SpotifyHelper {
 
   SpotifyHelper({required APIService apiService}) : _apiService = apiService;
 
-  void playMix(
+  Future<void> playMix(
     List<SpotifyPlaylist> playlists,
     TimeRange timeRange,
     void Function() onError,
   ) async {
-    String deviceId = await _apiService.getActiveDevice();
-
-    if (deviceId.isEmpty) {
-      onError();
-      return;
-    }
-
-    final listOfSongs = await _apiService.fetchAndMixAllSongsFromPlaylists(
-      playlists.map((playlist) => playlist.id).toList(),
-      timeRange,
-    );
-
-    bool isFirstSong = true;
-
-    for (SpotifySong song in listOfSongs) {
-      await _apiService.addSongToQueue(song.id, deviceId);
-
-      if (isFirstSong) {
-        debugPrint("first song is: ${song.name}");
-
-        isFirstSong = false;
-        try {
-          await _apiService.pause(deviceId);
-        } on DioError catch (e) {
-          if (e.response?.statusCode == 403) {
-            // do nothing, the player is already paused
-          }
-        }
-        SpotifySong? currentTrack;
-        while (
-            (currentTrack = await _apiService.currentTrack())?.id != song.id) {
-          debugPrint("skipping to next song");
-          debugPrint(
-              "the song ${currentTrack?.name} is different from ${song.name}");
-          await _apiService.skipToNextSong(deviceId);
-        }
-        _apiService.play(deviceId);
+    try {
+      // Step 1: Get the active device
+      String deviceId = await _apiService.getActiveDevice();
+      if (deviceId.isEmpty) {
+        debugPrint("No active device found.");
+        onError();
+        return;
       }
+
+      // Step 2: Fetch and mix songs from playlists
+      final listOfSongs = await _apiService.fetchAndMixAllSongsFromPlaylists(
+        playlists.map((playlist) => playlist.id).toList(),
+        timeRange,
+      );
+
+      if (listOfSongs.isEmpty) {
+        debugPrint("No songs found in the playlists.");
+        onError();
+        return;
+      }
+
+      // Step 3: Add songs to the queue and handle playback
+      bool isFirstSong = true;
+
+      for (SpotifySong song in listOfSongs) {
+        await _apiService.addSongToQueue(song.id, deviceId);
+
+        if (isFirstSong) {
+          debugPrint("First song is: ${song.name}");
+          isFirstSong = false;
+
+          // Ensure the player is paused before starting
+          try {
+            await _apiService.pause(deviceId);
+          } on DioError catch (e) {
+            if (e.response?.statusCode == 403) {
+              debugPrint("Player is already paused.");
+            }
+          }
+
+          // Ensure the correct song starts playing
+          SpotifySong? currentTrack;
+          while ((currentTrack = await _apiService.currentTrack())?.id !=
+              song.id) {
+            debugPrint(
+              "Skipping to next song. Current: ${currentTrack?.name}, Expected: ${song.name}",
+            );
+            await _apiService.skipToNextSong(deviceId);
+          }
+
+          // Play the song
+          await _apiService.play(deviceId);
+        }
+      }
+
+      debugPrint("Mix successfully played.");
+    } catch (e) {
+      debugPrint("An error occurred: $e");
+      onError();
     }
   }
 }
