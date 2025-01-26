@@ -27,5 +27,10 @@ doc/api/
 .flutter-plugins
 .flutter-plugins-dependencies
 
-.idea/app.iml
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
 **/.DS_Store
