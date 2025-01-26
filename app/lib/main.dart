@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mixify/api_service.dart';
 import 'package:mixify/auth_view.dart';
 import 'package:mixify/playlist_grid.dart';
+import 'package:mixify/theme.dart';
 import 'package:mixify/token_manager.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
@@ -32,33 +33,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Mixify',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.black, // Use black as the primary seed color
-          brightness: Brightness.dark, // Ensure a dark-themed palette
-        ),
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.black, // Match the button color
-          foregroundColor: Colors.white, // Ensure high contrast
-          titleTextStyle: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20.0,
-            color: Colors.white,
-          ),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black, // Match button and AppBar colors
-            foregroundColor: Colors.white, // High contrast for text
-            textStyle: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: Colors.black, // Match buttons
-          foregroundColor: Colors.white,
-        ),
-      ),
+      theme: buildAppTheme(),
       home: MyHomePage(title: "Mixify"),
     );
   }

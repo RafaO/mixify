@@ -18,6 +18,7 @@ class PlaylistGrid extends StatefulWidget {
 class _PlaylistGridState extends State<PlaylistGrid> {
   List<SpotifyPlaylist> playlists = [];
   bool isLoading = false;
+  TimeRange selectedTimeRange = TimeRange.oneMonth();
 
   @override
   void initState() {
@@ -42,6 +43,8 @@ class _PlaylistGridState extends State<PlaylistGrid> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -53,48 +56,76 @@ class _PlaylistGridState extends State<PlaylistGrid> {
         padding: const EdgeInsets.all(16.0),
         child: isLoading
             ? const Center(
-          child: CircularProgressIndicator(),
-        )
-            : playlists.isEmpty
-            ? _buildEmptyState(context)
-            : GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16.0,
-            mainAxisSpacing: 16.0,
-          ),
-          itemCount: playlists.length + 1,
-          itemBuilder: (context, index) {
-            if (index < playlists.length) {
-              final playlist = playlists[index];
-              return PlaylistCard(
-                playlist: playlist,
-                onRemove: (playlistToRemove) {
-                  setState(() {
-                    playlists.remove(playlistToRemove);
-                  });
-                },
-              );
-            } else {
-              return _buildAddButton(context);
-            }
-          },
-        ),
+                child: CircularProgressIndicator(),
+              )
+            : Column(
+                children: [
+                  // Time selection explanation label
+                  const Text(
+                    'Mixing songs added to the lists in the last...',
+                    style: TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  // Time selection bubble row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildTimeBubble('1 Month', TimeRange.oneMonth(), theme),
+                      _buildTimeBubble(
+                          '3 Months', TimeRange.threeMonths(), theme),
+                      _buildTimeBubble('1 Year', TimeRange.oneYear(), theme),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  // Check if playlists are available or show empty state
+                  Expanded(
+                    child: playlists.isEmpty
+                        ? _buildEmptyState(context, theme)
+                        : GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 16.0,
+                              mainAxisSpacing: 16.0,
+                            ),
+                            itemCount: playlists.length + 1,
+                            itemBuilder: (context, index) {
+                              if (index < playlists.length) {
+                                final playlist = playlists[index];
+                                return PlaylistCard(
+                                  playlist: playlist,
+                                  onRemove: (playlistToRemove) {
+                                    setState(() {
+                                      playlists.remove(playlistToRemove);
+                                    });
+                                  },
+                                );
+                              } else {
+                                return _buildAddButton(context);
+                              }
+                            },
+                          ),
+                  ),
+                ],
+              ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: playlists.isEmpty ? Colors.grey.shade400 : Colors.green,
+        backgroundColor: playlists.isEmpty
+            ? Colors.grey.shade400
+            : theme.colorScheme.primary,
         onPressed: playlists.isEmpty
             ? null
             : () async {
-          SpotifyHelper(apiService: widget.apiService).playMix(
-            playlists,
-            TimeRange.oneMonth(),
-                () {
-              if (!context.mounted) return;
-              _showAlertDialog(context);
-            },
-          );
-        },
+                SpotifyHelper(apiService: widget.apiService).playMix(
+                  playlists,
+                  selectedTimeRange,
+                  () {
+                    if (!context.mounted) return;
+                    _showAlertDialog(context);
+                  },
+                );
+              },
         icon: Image.asset(
           'assets/Spotify_Icon_CMYK_Black.png',
           width: 24.0,
@@ -104,7 +135,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
         label: Text(
           "Play on Spotify",
           style: TextStyle(
-            color: playlists.isEmpty ? Colors.grey.shade700 : Colors.white,
+            color: playlists.isEmpty ? Colors.grey.shade700 : Colors.black,
           ),
         ),
       ),
@@ -112,6 +143,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
   }
 
   Widget _buildAddButton(BuildContext context) {
+    final theme = Theme.of(context);
     return Card(
       elevation: 6.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
@@ -135,14 +167,13 @@ class _PlaylistGridState extends State<PlaylistGrid> {
           child: Icon(
             Icons.add,
             size: 40.0,
-            color: Colors.grey,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildEmptyState(BuildContext context, ThemeData theme) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -150,12 +181,15 @@ class _PlaylistGridState extends State<PlaylistGrid> {
           Icon(
             Icons.music_note,
             size: 80.0,
-            color: Colors.grey.shade400,
+            color: theme.colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 16.0),
-          const Text(
+          Text(
             'No playlists added yet!',
-            style: TextStyle(fontSize: 18.0, color: Colors.grey),
+            style: TextStyle(
+              fontSize: 18.0,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 16.0),
           ElevatedButton(
@@ -173,18 +207,48 @@ class _PlaylistGridState extends State<PlaylistGrid> {
               ));
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
             ),
             child: const Text(
               'Add a Playlist',
-              style: TextStyle(fontSize: 16.0, color: Colors.white),
+              style: TextStyle(fontSize: 16.0),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTimeBubble(String label, TimeRange timeRange, ThemeData theme) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedTimeRange = timeRange;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        decoration: BoxDecoration(
+          color: selectedTimeRange == timeRange
+              ? theme.colorScheme.secondary
+              : Colors.transparent,
+          border: Border.all(color: theme.colorScheme.secondary),
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: selectedTimeRange == timeRange
+                ? Colors.black
+                : theme.colorScheme.secondary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
