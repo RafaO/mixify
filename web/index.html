@@ -1,137 +1,213 @@
-<!DOCTYPE html><html><head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mixify - Your ultimate Spotify playlist mixer! Create the perfect mix with customizable settings and enjoy seamless playback.">
+    <title>Mixify - Spotify Playlist Mixer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+        }
 
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
+        /* Header */
+        header {
+            background-color: #1db954;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
 
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+        header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 0;
+        }
 
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="$FLUTTER_BASE_HREF">
+        header p {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-top: 10px;
+        }
 
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Mix Spotify playlists">
+        /* Main container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
 
-  <!-- iOS meta tags & icons -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="code">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+        /* Sections */
+        section {
+            margin-top: 40px;
+        }
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png">
+        section h2 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
 
-  <title>code</title>
-  <link rel="manifest" href="manifest.json">
+        section p {
+            font-size: 1.2rem;
+            font-weight: 400;
+            line-height: 1.6;
+        }
 
-  <script>
-    // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = null;
-  </script>
-  <!-- This script adds the flutter initialization JS code -->
-  <script src="flutter.js" defer=""></script>
-  
-  
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-  
-  
-  
-  
-  <style id="splash-screen-style">
-    html {
-      height: 100%
-    }
+        /* Feature cards */
+        .feature-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
 
-    body {
-      margin: 0;
-      min-height: 100%;
-      background-color: #ffffff;
-      background-image: url("splash/img/light-background.png");
-      background-size: 100% 100%;
-    }
+        .feature {
+            background-color: #121212;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            flex: 1;
+            max-width: 300px;
+            text-align: center;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
 
-    .center {
-      margin: 0;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      -ms-transform: translate(-50%, -50%);
-      transform: translate(-50%, -50%);
-    }
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8);
+        }
 
-    .contain {
-      display:block;
-      width:100%; height:100%;
-      object-fit: contain;
-    }
+        .feature img {
+            width: 120px;
+            margin-bottom: 15px;
+        }
 
-    .stretch {
-      display:block;
-      width:100%; height:100%;
-    }
+        .feature h3 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #1db954;
+        }
 
-    .cover {
-      display:block;
-      width:100%; height:100%;
-      object-fit: cover;
-    }
+        .feature p {
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+        }
 
-    .bottom {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      -ms-transform: translate(-50%, 0);
-      transform: translate(-50%, 0);
-    }
+        /* Call to action */
+        .cta {
+            margin-top: 50px;
+        }
 
-    .bottomLeft {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-    }
+        .cta h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
 
-    .bottomRight {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-    }
-  </style>
-  <script id="splash-screen-script">
-    function removeSplashFromWeb() {
-      document.getElementById("splash")?.remove();
-      document.getElementById("splash-branding")?.remove();
-      document.body.style.background = "transparent";
-    }
-  </script>
+        .cta p {
+            font-size: 1.2rem;
+            font-weight: 400;
+        }
+
+        .cta img {
+            width: 160px;
+            margin: 15px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .cta img:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1db954;
+            color: #fff;
+            padding: 15px 0;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        footer p {
+            font-size: 0.9rem;
+            font-weight: 400;
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
-  <picture id="splash-branding">
-    <source srcset="splash/img/branding-1x.png 1x, splash/img/branding-2x.png 2x, splash/img/branding-3x.png 3x, splash/img/branding-4x.png 4x" media="(prefers-color-scheme: light)">
-    <source srcset="splash/img/branding-dark-1x.png 1x, splash/img/branding-dark-2x.png 2x, splash/img/branding-dark-3x.png 3x, splash/img/branding-dark-4x.png 4x" media="(prefers-color-scheme: dark)">
-    <img class="bottom" aria-hidden="true" src="splash/img/branding-1x.png" alt="">
-  </picture>
-  
-  <script>
-    window.addEventListener('load', function(ev) {
-      // Download main.dart.js
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
-          });
-        }
-      });
-    });
-  </script>
+    <header>
+        <h1>Welcome to Mixify</h1>
+        <p>Mix your Spotify playlists seamlessly and create the perfect vibe!</p>
+    </header>
+
+    <div class="container">
+        <section>
+            <h2>About Mixify</h2>
+            <p>Mixify allows you to blend multiple Spotify playlists with custom settings. Whether you're creating a party mix or curating the ultimate workout playlist, Mixify gives you the tools to make it happen with ease.</p>
+        </section>
+
+        <section class="feature-section">
+            <div class="feature">
+                <img src="img/custom-settings.webp" alt="Custom Settings">
+                <h3>Custom Settings</h3>
+                <p>Control how your playlists are mixed, from time ranges to mood-specific filters.</p>
+            </div>
+            <div class="feature">
+                <img src="img/integration.webp" alt="Seamless Integration">
+                <h3>Seamless Integration</h3>
+                <p>Connect directly to your Spotify account and start mixing instantly.</p>
+            </div>
+            <div class="feature">
+                <img src="img/play-anywhere.webp" alt="Play Anywhere">
+                <h3>Play Anywhere</h3>
+                <p>Stream your mixes to any Spotify-supported device effortlessly.</p>
+            </div>
+        </section>
+
+        <section class="cta">
+            <h2>Get Mixify Now</h2>
+            <p>Available on Android. Click below to download:</p>
+            <div>
+                  <a href='https://play.google.com/store/apps/details?id=com.keller.mixify'>
+                    <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/>
+                </a>
+            </div>
+        </section>
+        <!-- <section class="cta">
+            <h2>Get Mixify Now</h2>
+            <p>Available on both Android and iOS. Click below to download:</p>
+            <div>
+                <a href="https://apps.apple.com/us/app/youguide/id1456046875?platform=iphone">
+                    <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=100x23&amp;releaseDate=1250467200"
+                      alt="Download on the App Store"
+                      style="border-radius: 13px; width: 188px; height: 52px;" />
+                  </a>
 
 
-</body></html>
+                  <a href='https://play.google.com/store/apps/details?id=com.keller.mixify'>
+                    <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/>
+                </a>
+            </div>
+        </section> -->
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Mixify. All rights reserved.</p>
+    </footer>
+</body>
+</html>
