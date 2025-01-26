@@ -56,59 +56,62 @@ class _PlaylistGridState extends State<PlaylistGrid> {
         padding: const EdgeInsets.all(16.0),
         child: isLoading
             ? const Center(
-                child: CircularProgressIndicator(),
-              )
+          child: CircularProgressIndicator(),
+        )
             : Column(
+          children: [
+            // Time selection explanation label
+            const Text(
+              'Mixing songs added to the lists in the last...',
+              style: TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            // Time selection bubble row
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Time selection explanation label
-                  const Text(
-                    'Mixing songs added to the lists in the last...',
-                    style: TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  // Time selection bubble row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildTimeBubble('1 Month', TimeRange.oneMonth(), theme),
-                      _buildTimeBubble(
-                          '3 Months', TimeRange.threeMonths(), theme),
-                      _buildTimeBubble('1 Year', TimeRange.oneYear(), theme),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  // Check if playlists are available or show empty state
-                  Expanded(
-                    child: playlists.isEmpty
-                        ? _buildEmptyState(context, theme)
-                        : GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 16.0,
-                              mainAxisSpacing: 16.0,
-                            ),
-                            itemCount: playlists.length + 1,
-                            itemBuilder: (context, index) {
-                              if (index < playlists.length) {
-                                final playlist = playlists[index];
-                                return PlaylistCard(
-                                  playlist: playlist,
-                                  onRemove: (playlistToRemove) {
-                                    setState(() {
-                                      playlists.remove(playlistToRemove);
-                                    });
-                                  },
-                                );
-                              } else {
-                                return _buildAddButton(context);
-                              }
-                            },
-                          ),
-                  ),
+                  _buildTimeBubble('1 Month', TimeRange.oneMonth(), theme),
+                  _buildTimeBubble('3 Months', TimeRange.threeMonths(), theme),
+                  _buildTimeBubble('1 Year', TimeRange.oneYear(), theme),
+                  _buildTimeBubble('Anytime', TimeRange.forever(), theme),
                 ],
               ),
+            ),
+            const SizedBox(height: 16),
+            // Check if playlists are available or show empty state
+            Expanded(
+              child: playlists.isEmpty
+                  ? _buildEmptyState(context, theme)
+                  : GridView.builder(
+                gridDelegate:
+                const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16.0,
+                  mainAxisSpacing: 16.0,
+                ),
+                itemCount: playlists.length + 1,
+                itemBuilder: (context, index) {
+                  if (index < playlists.length) {
+                    final playlist = playlists[index];
+                    return PlaylistCard(
+                      playlist: playlist,
+                      onRemove: (playlistToRemove) {
+                        setState(() {
+                          playlists.remove(playlistToRemove);
+                        });
+                      },
+                    );
+                  } else {
+                    return _buildAddButton(context);
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: playlists.isEmpty
@@ -117,15 +120,15 @@ class _PlaylistGridState extends State<PlaylistGrid> {
         onPressed: playlists.isEmpty
             ? null
             : () async {
-                SpotifyHelper(apiService: widget.apiService).playMix(
-                  playlists,
-                  selectedTimeRange,
-                  () {
-                    if (!context.mounted) return;
-                    _showAlertDialog(context);
-                  },
-                );
-              },
+          SpotifyHelper(apiService: widget.apiService).playMix(
+            playlists,
+            selectedTimeRange,
+                () {
+              if (!context.mounted) return;
+              _showAlertDialog(context);
+            },
+          );
+        },
         icon: Image.asset(
           'assets/Spotify_Icon_CMYK_Black.png',
           width: 24.0,
@@ -208,7 +211,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
             },
             style: ElevatedButton.styleFrom(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+              const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
