@@ -9,6 +9,11 @@ jobs:
   test:
     # This job will run on ubuntu virtual machine
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./app
+
     steps:
 
       # Setup Java environment in order to build the Android app.
@@ -32,6 +37,11 @@ jobs:
 
   build_android:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./app
+
     steps:
       # Setup Java environment in order to build the Android app.
       - uses: actions/checkout@v4
