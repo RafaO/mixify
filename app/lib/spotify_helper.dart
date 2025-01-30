@@ -49,7 +49,7 @@ class SpotifyHelper {
           // Ensure the player is paused before starting
           try {
             await _apiService.pause(deviceId);
-          } on DioError catch (e) {
+          } on DioException catch (e) {
             if (e.response?.statusCode == 403) {
               debugPrint("Player is already paused.");
             }
