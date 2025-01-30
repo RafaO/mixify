@@ -122,13 +122,12 @@ class APIService {
       // get the first one that is active
       deviceId = response.data['devices'].first['id'];
 
-      // use this if we want to get the active device only
-      // final activeDevice = data['devices'].firstWhere(
-      //     (device) => device['is_active'] == true,
-      //     orElse: () => null);
-      // if (activeDevice != null) {
-      //   deviceId = activeDevice['id'];
-      // }
+      final activeDevice = response.data['devices'].firstWhere(
+          (device) => device['is_active'] == true,
+          orElse: () => null);
+      if (activeDevice != null) {
+        deviceId = activeDevice['id'];
+      }
     } else {
       return '';
     }
