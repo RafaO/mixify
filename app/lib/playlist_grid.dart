@@ -125,21 +125,16 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                   await SpotifyHelper(apiService: widget.apiService).playMix(
                     playlists,
                     selectedTimeRange,
-                    () {
-                      if (!context.mounted) return;
-                      Navigator.of(context).pop();
-                      _showAlertDialog(context);
-                    },
                   );
                   if (!context.mounted) return;
                   Navigator.of(context).pop();
                 } catch (e) {
-                  Navigator.of(context).pop(); // Close progress dialog
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('An error occurred.'),
-                    ),
-                  );
+                  debugPrint("error playing the mix");
+                  Navigator.of(context).pop(); // close progress dialog
+                  await Future.delayed(const Duration(
+                      milliseconds: 100)); // Ensure proper dismissal
+                  if (!context.mounted) return;
+                  _showAlertDialog(context);
                 }
               },
         icon: Image.asset(

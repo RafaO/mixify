@@ -41,8 +41,15 @@ class APIService {
     ));
   }
 
-  Future<void> play(String deviceId) async {
-    _dio.put('/v1/me/player/play?device_id=$deviceId');
+  Future<void> play(String deviceId, {List<SpotifySong>? songs}) async {
+    Object? data;
+    if (songs != null) {
+      data = {
+        "uris": songs.map((song) => song.id).toList(),
+      };
+    }
+
+    await _dio.put('/v1/me/player/play?device_id=$deviceId', data: data);
   }
 
   Future<void> pause(String deviceId) async {
@@ -65,6 +72,9 @@ class APIService {
     }
 
     final data = response.data;
+    if (data == null || data['item'] == null) {
+      return null;
+    }
     return SpotifySong(
       data['item']['uri'],
       name: data['item']['name'],

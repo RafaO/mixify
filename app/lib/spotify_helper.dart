@@ -13,33 +13,36 @@ class SpotifyHelper {
   Future<void> playMix(
     List<SpotifyPlaylist> playlists,
     TimeRange timeRange,
-    void Function() onError,
   ) async {
-    try {
-      // Step 1: Get the active device
-      String deviceId = await _apiService.getActiveDevice();
-      if (deviceId.isEmpty) {
-        debugPrint("No active device found.");
-        onError();
-        return;
-      }
+    // Step 1: Get the active device
+    String deviceId = await _apiService.getActiveDevice();
+    if (deviceId.isEmpty) {
+      debugPrint("No active device found.");
+      return;
+    }
 
-      // Step 2: Fetch and mix songs from playlists
-      final listOfSongs = await _apiService.fetchAndMixAllSongsFromPlaylists(
-        playlists.map((playlist) => playlist.id).toList(),
-        timeRange,
-      );
+    // Step 2: Fetch and mix songs from playlists
+    final listOfSongs = await _apiService.fetchAndMixAllSongsFromPlaylists(
+      playlists.map((playlist) => playlist.id).toList(),
+      timeRange,
+    );
 
-      if (listOfSongs.isEmpty) {
-        debugPrint("No songs found in the playlists.");
-        onError();
-        return;
-      }
+    if (listOfSongs.isEmpty) {
+      debugPrint("No songs found in the playlists.");
+      // TODO handle this case
+      return;
+    }
 
+    bool useQueue = false;
+
+    if (!useQueue) {
+      await _apiService.play(deviceId, songs: listOfSongs);
+    } else {
       // Step 3: Add songs to the queue and handle playback
       bool isFirstSong = true;
 
       for (SpotifySong song in listOfSongs) {
+        debugPrint("adding song to queue");
         await _apiService.addSongToQueue(song.id, deviceId);
 
         if (isFirstSong) {
@@ -57,8 +60,8 @@ class SpotifyHelper {
 
           // Ensure the correct song starts playing
           SpotifySong? currentTrack;
-          while ((currentTrack = await _apiService.currentTrack())?.id !=
-              song.id) {
+          while ((currentTrack = await _apiService.currentTrack()) != null &&
+              currentTrack?.id != song.id) {
             debugPrint(
               "Skipping to next song. Current: ${currentTrack?.name}, Expected: ${song.name}",
             );
@@ -66,14 +69,11 @@ class SpotifyHelper {
           }
 
           // Play the song
+          debugPrint("playing");
           await _apiService.play(deviceId);
         }
       }
-
-      debugPrint("Mix successfully played.");
-    } catch (e) {
-      debugPrint("An error occurred: $e");
-      onError();
     }
+    debugPrint("Mix successfully played.");
   }
 }
