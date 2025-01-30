@@ -58,14 +58,15 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _apiService = APIService(
-        onUnauthorised: () {
-          // Navigate to the auth screen
-          setState(() {
-            authenticated = false;
-            Navigator.popUntil(context, ModalRoute.withName('/'));
-          });
-        },
-        tokenManager: widget._tokenManager);
+      onUnauthorised: () {
+        // Navigate to the auth screen
+        setState(() {
+          authenticated = false;
+          Navigator.popUntil(context, ModalRoute.withName('/'));
+        });
+      },
+      tokenManager: widget._tokenManager,
+    );
     widget._tokenManager.getTokenFromStorage().then((token) {
       if (token != null && token.isNotEmpty) {
         setState(() {
