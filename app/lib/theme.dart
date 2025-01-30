@@ -9,6 +9,8 @@ ThemeData buildAppTheme() {
       brightness: Brightness.dark, // Ensure a dark-themed palette
     ),
     useMaterial3: true,
+    highlightColor: greenColor.withValues(alpha: 0.8), // Highlight color
+    splashColor: greenColor.withValues(alpha: 0.4), // Custom ripple effect color
     appBarTheme: const AppBarTheme(
       backgroundColor: greenColor,
       foregroundColor: Colors.white, // Ensure high contrast text

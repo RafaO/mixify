@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mixify/api_service.dart';
 import 'package:mixify/entities/spotify_playlist.dart';
 import 'package:mixify/entities/time_range.dart';
@@ -113,12 +114,13 @@ class _PlaylistGridState extends State<PlaylistGrid> {
               ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: playlists.isEmpty
+        backgroundColor: playlists.isEmpty || isLoading
             ? Colors.grey.shade400
             : theme.colorScheme.primary,
-        onPressed: playlists.isEmpty
+        onPressed: playlists.isEmpty || isLoading
             ? null
             : () async {
+                setState(() => isLoading = true);
                 _showProgressDialog(context);
 
                 try {
@@ -130,25 +132,39 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                   Navigator.of(context).pop();
                 } catch (e) {
                   debugPrint("error playing the mix");
-                  Navigator.of(context).pop(); // close progress dialog
-                  await Future.delayed(const Duration(
-                      milliseconds: 100)); // Ensure proper dismissal
+                  Navigator.of(context).pop();
+                  await Future.delayed(const Duration(milliseconds: 100));
                   if (!context.mounted) return;
                   _showAlertDialog(context);
+                } finally {
+                  if (context.mounted) setState(() => isLoading = false);
                 }
               },
-        icon: Image.asset(
-          'assets/Spotify_Icon_CMYK_Black.png',
-          width: 24.0,
-          height: 24.0,
-          color: playlists.isEmpty ? Colors.grey.shade700 : null,
-        ),
-        label: Text(
-          "Play on Spotify",
-          style: TextStyle(
-            color: playlists.isEmpty ? Colors.grey.shade700 : Colors.black,
-          ),
-        ),
+        icon: isLoading
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      Colors.black), // Customize color
+                ),
+              )
+            : Image.asset(
+                'assets/Spotify_Icon_CMYK_Black.png',
+                width: 24.0,
+                height: 24.0,
+                color: playlists.isEmpty ? Colors.grey.shade700 : null,
+              ),
+        label: isLoading
+            ? const Text("Loading...", style: TextStyle(color: Colors.black))
+            : Text(
+                "Play on Spotify",
+                style: TextStyle(
+                  color:
+                      playlists.isEmpty ? Colors.grey.shade700 : Colors.black,
+                ),
+              ),
       ),
     );
   }
