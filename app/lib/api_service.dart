@@ -22,13 +22,15 @@ class APIService {
 
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
+        debugPrint(
+            "calling ${options.uri} with token ${tokenManager.spotifyToken}");
         if (options.baseUrl == baseUrl) {
           options.headers['Authorization'] =
               'Bearer ${tokenManager.spotifyToken}';
         }
         return handler.next(options);
       },
-      onError: (DioError error, handler) {
+      onError: (DioException error, handler) {
         if (error.response?.statusCode == 401) {
           debugPrint('Token expired. Please re-login.');
           tokenManager.expired();
@@ -70,7 +72,7 @@ class APIService {
   }
 
   Future<List<SpotifyPlaylist>> fetchPlaylists() async {
-    const url = '/v1/me/playlists?limit=50&offset=0';
+    const url = '/v1/me/playlists';
 
     final response = await _dio.get(url);
 
