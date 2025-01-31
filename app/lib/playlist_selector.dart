@@ -116,6 +116,15 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
                 hintStyle: TextStyle(color: hintTextColor),
                 // Faded hint text
                 prefixIcon: const Icon(Icons.search),
+                suffixIcon: searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.cancel_outlined),
+                        onPressed: () {
+                          searchController.text = "";
+                          _filterPlaylists("");
+                        },
+                      )
+                    : null,
                 border: UnderlineInputBorder(
                   borderRadius: BorderRadius.circular(30.0),
                   borderSide: BorderSide.none,
