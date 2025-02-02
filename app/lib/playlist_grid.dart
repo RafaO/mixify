@@ -5,6 +5,7 @@ import 'package:mixify/entities/time_range.dart';
 import 'package:mixify/playlist_card.dart';
 import 'package:mixify/playlist_selector.dart';
 import 'package:mixify/spotify_helper.dart';
+import 'package:mixify/utils.dart';
 
 class PlaylistGrid extends StatefulWidget {
   final APIService apiService;
@@ -129,12 +130,24 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                   );
                   if (!context.mounted) return;
                   Navigator.of(context).pop();
+                  bool launched = await openSpotify();
+                  if (!launched) {
+                    _showAlertDialog(
+                      context,
+                      'Started!',
+                      'Spotify should be now playing your mix! Enjoy!',
+                    );
+                  }
                 } catch (e) {
                   debugPrint("error playing the mix");
                   Navigator.of(context).pop();
                   await Future.delayed(const Duration(milliseconds: 100));
                   if (!context.mounted) return;
-                  _showAlertDialog(context);
+                  _showAlertDialog(
+                    context,
+                    'Could not start',
+                    'Please start your Spotify app on any device and try again.',
+                  );
                 } finally {
                   if (context.mounted) setState(() => isLoading = false);
                 }
@@ -307,14 +320,13 @@ class _PlaylistGridState extends State<PlaylistGrid> {
     );
   }
 
-  void _showAlertDialog(BuildContext context) {
+  void _showAlertDialog(BuildContext context, String title, String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Could not start'),
-          content: const Text(
-              'Please start your Spotify app on any device and try again.'),
+          title: Text(title),
+          content: Text(message),
           actions: <Widget>[
             TextButton(
               child: const Text('OK'),
