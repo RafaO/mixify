@@ -1,4 +1,4 @@
-package com.keller.mixify
+package com.keller.mixafy
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,4 +1,4 @@
-# Mixify
+# Mixafy
 
 Mix Spotify playlists
 

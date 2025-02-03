@@ -54,20 +54,20 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBtCRcks9wL4-NTAaznYFdlxAI-5mCtLbc',
-    appId: '1:727814898479:android:858b096249aa950d9d57da',
-    messagingSenderId: '727814898479',
-    projectId: 'mixify-cd066',
-    storageBucket: 'mixify-cd066.appspot.com',
+    apiKey: 'AIzaSyDmX-yo7SlRH0wSnEagCsan6GaA55fu6E8',
+    appId: '1:1074469769368:android:6370883d37de939f16c0ed',
+    messagingSenderId: '1074469769368',
+    projectId: 'mixafy-5fb57',
+    storageBucket: 'mixafy-5fb57.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBXqUMr_yqTfDarHPWkKM63f4j2Q6sZ5RA',
-    appId: '1:727814898479:ios:f34b51953c44d47e9d57da',
-    messagingSenderId: '727814898479',
-    projectId: 'mixify-cd066',
-    storageBucket: 'mixify-cd066.appspot.com',
-    iosBundleId: 'com.keller.code',
+    apiKey: 'AIzaSyAF-3bZr-DH_TN2B2pcUEnUrr9fqDK9BV0',
+    appId: '1:1074469769368:ios:e39beb2b4cc5aaad16c0ed',
+    messagingSenderId: '1074469769368',
+    projectId: 'mixafy-5fb57',
+    storageBucket: 'mixafy-5fb57.firebasestorage.app',
+    iosBundleId: 'com.keller.mixafy',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(

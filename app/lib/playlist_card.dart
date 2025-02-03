@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mixify/entities/spotify_playlist.dart';
+import 'package:mixafy/entities/spotify_playlist.dart';
 
 class PlaylistCard extends StatelessWidget {
   final SpotifyPlaylist playlist;

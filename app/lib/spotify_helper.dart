@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:mixify/api_service.dart';
-import 'package:mixify/entities/spotify_playlist.dart';
-import 'package:mixify/entities/spotify_song.dart';
-import 'package:mixify/entities/time_range.dart';
+import 'package:mixafy/api_service.dart';
+import 'package:mixafy/entities/spotify_playlist.dart';
+import 'package:mixafy/entities/spotify_song.dart';
+import 'package:mixafy/entities/time_range.dart';
 
 class SpotifyHelper {
   final APIService _apiService;

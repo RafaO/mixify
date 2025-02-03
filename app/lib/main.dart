@@ -5,11 +5,11 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mixify/api_service.dart';
-import 'package:mixify/auth_view.dart';
-import 'package:mixify/playlist_grid.dart';
-import 'package:mixify/theme.dart';
-import 'package:mixify/token_manager.dart';
+import 'package:mixafy/api_service.dart';
+import 'package:mixafy/auth_view.dart';
+import 'package:mixafy/playlist_grid.dart';
+import 'package:mixafy/theme.dart';
+import 'package:mixafy/token_manager.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 
 import 'firebase_options.dart';
@@ -25,7 +25,7 @@ Future main() async {
     if (kDebugMode) {
       developer.log(
         'general error:',
-        name: 'com.keller.mixify',
+        name: 'com.keller.mixafy',
         error: error,
       );
     } else {
@@ -42,9 +42,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Mixify',
+      title: 'Mixafy',
       theme: buildAppTheme(),
-      home: MyHomePage(title: "Mixify"),
+      home: MyHomePage(title: "Mixafy"),
     );
   }
 }
@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
       FirebaseCrashlytics.instance.log("clientID is empty");
       return;
     }
-    const redirectUri = 'mixify://callback';
+    const redirectUri = 'mixafy://callback';
     const scope =
         "playlist-read-private, user-modify-playback-state, user-read-playback-state, user-read-currently-playing";
 

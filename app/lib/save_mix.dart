@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mixify/entities/spotify_playlist.dart';
+import 'package:mixafy/entities/spotify_playlist.dart';
 
 class SaveMixScreen extends StatefulWidget {
   final List<SpotifyPlaylist> playlists;

@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "727814898479",
-    "project_id": "mixify-cd066",
-    "storage_bucket": "mixify-cd066.appspot.com"
+    "project_number": "1074469769368",
+    "project_id": "mixafy-5fb57",
+    "storage_bucket": "mixafy-5fb57.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:727814898479:android:858b096249aa950d9d57da",
+        "mobilesdk_app_id": "1:1074469769368:android:6370883d37de939f16c0ed",
         "android_client_info": {
-          "package_name": "com.keller.mixify"
+          "package_name": "com.keller.mixafy"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBtCRcks9wL4-NTAaznYFdlxAI-5mCtLbc"
+          "current_key": "AIzaSyDmX-yo7SlRH0wSnEagCsan6GaA55fu6E8"
         }
       ],
       "services": {

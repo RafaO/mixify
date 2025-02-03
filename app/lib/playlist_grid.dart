@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mixify/api_service.dart';
-import 'package:mixify/entities/spotify_playlist.dart';
-import 'package:mixify/entities/time_range.dart';
-import 'package:mixify/playlist_card.dart';
-import 'package:mixify/playlist_selector.dart';
-import 'package:mixify/save_mix.dart';
-import 'package:mixify/spotify_helper.dart';
-import 'package:mixify/utils.dart';
+import 'package:mixafy/api_service.dart';
+import 'package:mixafy/entities/spotify_playlist.dart';
+import 'package:mixafy/entities/time_range.dart';
+import 'package:mixafy/playlist_card.dart';
+import 'package:mixafy/playlist_selector.dart';
+import 'package:mixafy/save_mix.dart';
+import 'package:mixafy/spotify_helper.dart';
+import 'package:mixafy/utils.dart';
 
 class PlaylistGrid extends StatefulWidget {
   final APIService apiService;
@@ -50,7 +50,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Mixify',
+          'Mixafy',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
