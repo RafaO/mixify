@@ -4,6 +4,7 @@ import 'package:mixify/entities/spotify_playlist.dart';
 import 'package:mixify/entities/time_range.dart';
 import 'package:mixify/playlist_card.dart';
 import 'package:mixify/playlist_selector.dart';
+import 'package:mixify/save_mix.dart';
 import 'package:mixify/spotify_helper.dart';
 import 'package:mixify/utils.dart';
 
@@ -52,6 +53,22 @@ class _PlaylistGridState extends State<PlaylistGrid> {
           'Mixify',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => SaveMixScreen(
+                      playlists: playlists,
+                      onSave: (mixName) {
+                        // saveMix(mixName, selectedPlaylists); // Implement this function
+                      },
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.save))
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
