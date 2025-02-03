@@ -54,20 +54,21 @@ class _PlaylistGridState extends State<PlaylistGrid> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => SaveMixScreen(
-                      playlists: playlists,
-                      onSave: (mixName) {
-                        // saveMix(mixName, selectedPlaylists); // Implement this function
-                      },
-                    ),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.save))
+          // IconButton(
+          //   onPressed: () {
+          //     Navigator.of(context).push(
+          //       MaterialPageRoute(
+          //         builder: (context) => SaveMixScreen(
+          //           playlists: playlists,
+          //           onSave: (mixName) {
+          //             // saveMix(mixName, selectedPlaylists); // Implement this function
+          //           },
+          //         ),
+          //       ),
+          //     );
+          //   },
+          //   icon: const Icon(Icons.save),
+          // )
         ],
       ),
       body: Padding(
