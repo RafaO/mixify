@@ -193,6 +193,15 @@ class APIService {
   Future<List<SpotifySong>> _fetchSongsFromPlaylist(
     String playlistId,
     TimeRange timeRange,
+  ) async =>
+      _fetchSongs('/v1/playlists/$playlistId/tracks', timeRange);
+
+  Future<List<SpotifySong>> _fetchSavedTracks(TimeRange timeRange) async =>
+      _fetchSongs('/v1/me/tracks', timeRange);
+
+  Future<List<SpotifySong>> _fetchSongs(
+    String playlistId,
+    TimeRange timeRange,
   ) async {
     final String baseUrl = '/v1/playlists/$playlistId/tracks';
     List<SpotifySong> playlistSongs = [];

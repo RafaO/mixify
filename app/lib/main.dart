@@ -95,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     const redirectUri = 'mixafy://callback';
     const scope =
-        "playlist-read-private, user-modify-playback-state, user-read-playback-state, user-read-currently-playing";
+        "playlist-read-private, user-modify-playback-state, user-read-playback-state, user-read-currently-playing, user-library-read";
 
     try {
       var accessToken = await SpotifySdk.getAccessToken(
