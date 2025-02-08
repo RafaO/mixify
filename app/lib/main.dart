@@ -45,6 +45,7 @@ class MyApp extends StatelessWidget {
       title: 'Mixafy',
       theme: buildAppTheme(),
       home: MyHomePage(title: "Mixafy"),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
