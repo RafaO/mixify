@@ -3,6 +3,7 @@ import 'package:mixafy/api_service.dart';
 import 'package:mixafy/entities/mix.dart';
 import 'package:mixafy/entities/spotify_playlist.dart';
 import 'package:mixafy/entities/time_range.dart';
+import 'package:mixafy/mix_list_screen.dart'; // Import the MixListScreen
 import 'package:mixafy/playlist_card.dart';
 import 'package:mixafy/playlist_selector.dart';
 import 'package:mixafy/save_mix.dart';
@@ -69,6 +70,20 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                     );
                   },
             icon: const Icon(Icons.save),
+          ),
+          IconButton(
+            onPressed: () async {
+              final savedMixes = await loadAllMixes();
+              // Navigate to the saved mixes list screen
+              if (context.mounted) {
+                Navigator.push(context,
+                  MaterialPageRoute(
+                    builder: (context) => MixListScreen(mixes: savedMixes),
+                  ),
+                );
+              }
+            },
+            icon: const Icon(Icons.list), // List icon to show saved mixes
           )
         ],
       ),
