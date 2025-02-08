@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mixafy/api_service.dart';
+import 'package:mixafy/entities/mix.dart';
 import 'package:mixafy/entities/spotify_playlist.dart';
 import 'package:mixafy/entities/time_range.dart';
 import 'package:mixafy/playlist_card.dart';
@@ -54,21 +55,21 @@ class _PlaylistGridState extends State<PlaylistGrid> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
-          // IconButton(
-          //   onPressed: () {
-          //     Navigator.of(context).push(
-          //       MaterialPageRoute(
-          //         builder: (context) => SaveMixScreen(
-          //           playlists: playlists,
-          //           onSave: (mixName) {
-          //             // saveMix(mixName, selectedPlaylists); // Implement this function
-          //           },
-          //         ),
-          //       ),
-          //     );
-          //   },
-          //   icon: const Icon(Icons.save),
-          // )
+          IconButton(
+            onPressed: playlists.isEmpty
+                ? null // TODO display a message to the user
+                : () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => SaveMixScreen(
+                          playlists: playlists,
+                          onSave: saveMix,
+                        ),
+                      ),
+                    );
+                  },
+            icon: const Icon(Icons.save),
+          )
         ],
       ),
       body: Padding(
@@ -197,6 +198,55 @@ class _PlaylistGridState extends State<PlaylistGrid> {
               ),
       ),
     );
+  }
+
+  saveMix(String mixName) async {
+    // display loading icon
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent closing while saving
+      builder: (context) => const AlertDialog(
+        content: Row(
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(width: 16),
+            Text("Saving mix..."),
+          ],
+        ),
+      ),
+    );
+
+    final mix = Mix(
+      mixName: mixName,
+      userId: "me", // TODO
+      playlists: playlists,
+      timeRange: selectedTimeRange,
+    );
+
+    bool result = await mix.save();
+
+    // Close the loading dialog
+    if (mounted) {
+      Navigator.pop(context);
+    }
+
+    // Show result dialog
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(result ? "Success" : "Error"),
+          content:
+              Text(result ? "Mix saved successfully!" : "Failed to save mix."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   Widget _buildAddButton(BuildContext context) {

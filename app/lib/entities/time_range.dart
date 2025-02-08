@@ -4,11 +4,8 @@ abstract class TimeRange {
 
   /// Factory constructors for specific time ranges
   factory TimeRange.oneMonth() => const OneMonth();
-
   factory TimeRange.threeMonths() => const ThreeMonths();
-
   factory TimeRange.oneYear() => const OneYear();
-
   factory TimeRange.forever() => const Forever();
 
   /// Method to calculate the start date based on the range
@@ -24,6 +21,31 @@ abstract class TimeRange {
       return DateTime.fromMillisecondsSinceEpoch(0); // Beginning of time
     }
     throw UnsupportedError('Unsupported time range');
+  }
+
+  /// Convert the object to JSON
+  String toJson() {
+    if (this is OneMonth) return 'oneMonth';
+    if (this is ThreeMonths) return 'threeMonths';
+    if (this is OneYear) return 'oneYear';
+    if (this is Forever) return 'forever';
+    throw UnsupportedError('Unsupported time range');
+  }
+
+  /// Create a TimeRange from JSON
+  factory TimeRange.fromJson(String json) {
+    switch (json) {
+      case 'oneMonth':
+        return TimeRange.oneMonth();
+      case 'threeMonths':
+        return TimeRange.threeMonths();
+      case 'oneYear':
+        return TimeRange.oneYear();
+      case 'forever':
+        return TimeRange.forever();
+      default:
+        throw ArgumentError('Invalid TimeRange value: $json');
+    }
   }
 }
 
