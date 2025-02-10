@@ -11,6 +11,7 @@ import 'package:mixafy/playlist_grid.dart';
 import 'package:mixafy/theme.dart';
 import 'package:mixafy/token_manager.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'firebase_options.dart';
 
@@ -90,8 +91,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> authenticateWithSpotify() async {
     String clientId = dotenv.env['spotify_client_id'] ?? '';
     if (clientId.isEmpty) {
-      // handle error
-      FirebaseCrashlytics.instance.log("clientID is empty");
+      FirebaseCrashlytics.instance.recordError(
+        Exception("clientID is empty"),
+        null,
+      );
       return;
     }
     const redirectUri = 'mixafy://callback';
@@ -99,17 +102,84 @@ class _MyHomePageState extends State<MyHomePage> {
         "playlist-read-private, user-modify-playback-state, user-read-playback-state, user-read-currently-playing, user-library-read";
 
     try {
-      var accessToken = await SpotifySdk.getAccessToken(
+      // Check if Spotify is installed
+      bool isInstalled = await SpotifySdk.connectToSpotifyRemote(
         clientId: clientId,
         redirectUrl: redirectUri,
-        scope: scope,
-      );
-      widget._tokenManager.tokenReceived(accessToken);
-      setState(() {
-        authenticated = true;
-      });
+      ).then((_) => true).catchError((_) => false);
+
+      if (isInstalled) {
+        // If installed, use Spotify SDK authentication
+        var accessToken = await SpotifySdk.getAccessToken(
+          clientId: clientId,
+          redirectUrl: redirectUri,
+          scope: scope,
+        );
+        widget._tokenManager.tokenReceived(accessToken);
+        setState(() {
+          authenticated = true;
+        });
+      } else {
+        if (mounted) _showSpotifyNotInstalledDialog(context);
+      }
     } on Exception catch (e, s) {
       FirebaseCrashlytics.instance.recordError(e, s);
+    }
+  }
+
+  void _showSpotifyNotInstalledDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/Spotify_Icon_CMYK_Black.png',
+              height: 24,
+            ),
+            // Ensure this image exists
+            const SizedBox(width: 10),
+            const Text("Spotify app not found"),
+          ],
+        ),
+        content: const Text(
+          "Mixafy requires the Spotify app to function properly. "
+          "Please install it and try again!",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Close"),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green, // Spotify theme color
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+              _openSpotifyStore();
+            },
+            child: const Text("Get Spotify"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _openSpotifyStore() async {
+    const url = 'https://www.spotify.com/download/';
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } else {
+      FirebaseCrashlytics.instance.recordError(
+        Exception("Failed to open Spotify store link"),
+        null,
+      );
     }
   }
 
