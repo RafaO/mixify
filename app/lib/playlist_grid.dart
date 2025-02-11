@@ -79,7 +79,15 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MixListScreen(mixes: savedMixes),
+                    builder: (context) => MixListScreen(
+                      mixes: savedMixes,
+                      onMixSelected: (Mix mix) {
+                        setState(() {
+                          playlists = mix.playlists;
+                          selectedTimeRange = mix.timeRange;
+                        });
+                      },
+                    ),
                   ),
                 );
               }
