@@ -47,6 +47,16 @@ abstract class TimeRange {
         throw ArgumentError('Invalid TimeRange value: $json');
     }
   }
+
+  /// Override toString for better display
+  @override
+  String toString() {
+    if (this is OneMonth) return '1 Month';
+    if (this is ThreeMonths) return '3 Months';
+    if (this is OneYear) return '1 Year';
+    if (this is Forever) return 'All Time';
+    return 'Unknown TimeRange';
+  }
 }
 
 class OneMonth extends TimeRange {

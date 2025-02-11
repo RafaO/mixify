@@ -20,7 +20,7 @@ class MixListScreen extends StatelessWidget {
           final mix = mixes[index];
           return ListTile(
             title: Text(mix.mixName),
-            subtitle: Text('Time Range: ${mix.timeRange}'),
+            subtitle: Text('Songs added in the last: ${mix.timeRange}'),
             onTap: () {
               // You can add logic here to view the mix details or play it
             },

@@ -76,7 +76,8 @@ class _PlaylistGridState extends State<PlaylistGrid> {
               final savedMixes = await Mix.loadAllMixes();
               // Navigate to the saved mixes list screen
               if (context.mounted) {
-                Navigator.push(context,
+                Navigator.push(
+                  context,
                   MaterialPageRoute(
                     builder: (context) => MixListScreen(mixes: savedMixes),
                   ),
@@ -106,12 +107,10 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _buildTimeBubble(
-                            '1 Month', TimeRange.oneMonth(), theme),
-                        _buildTimeBubble(
-                            '3 Months', TimeRange.threeMonths(), theme),
-                        _buildTimeBubble('1 Year', TimeRange.oneYear(), theme),
-                        _buildTimeBubble('Anytime', TimeRange.forever(), theme),
+                        _buildTimeBubble(TimeRange.oneMonth(), theme),
+                        _buildTimeBubble(TimeRange.threeMonths(), theme),
+                        _buildTimeBubble(TimeRange.oneYear(), theme),
+                        _buildTimeBubble(TimeRange.forever(), theme),
                       ],
                     ),
                   ),
@@ -344,7 +343,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
     );
   }
 
-  Widget _buildTimeBubble(String label, TimeRange timeRange, ThemeData theme) {
+  Widget _buildTimeBubble(TimeRange timeRange, ThemeData theme) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -362,7 +361,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
           borderRadius: BorderRadius.circular(20.0),
         ),
         child: Text(
-          label,
+          timeRange.toString(),
           style: TextStyle(
             color: selectedTimeRange == timeRange
                 ? Colors.black
