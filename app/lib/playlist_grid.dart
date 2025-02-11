@@ -3,7 +3,7 @@ import 'package:mixafy/api_service.dart';
 import 'package:mixafy/entities/mix.dart';
 import 'package:mixafy/entities/spotify_playlist.dart';
 import 'package:mixafy/entities/time_range.dart';
-import 'package:mixafy/mix_list_screen.dart'; // Import the MixListScreen
+import 'package:mixafy/mix_list_screen.dart';
 import 'package:mixafy/playlist_card.dart';
 import 'package:mixafy/playlist_selector.dart';
 import 'package:mixafy/save_mix.dart';
@@ -23,27 +23,6 @@ class _PlaylistGridState extends State<PlaylistGrid> {
   List<SpotifyPlaylist> playlists = [];
   bool isLoading = false;
   TimeRange selectedTimeRange = TimeRange.oneMonth();
-
-  @override
-  void initState() {
-    super.initState();
-    _loadPlaylists();
-  }
-
-  Future<void> _loadPlaylists() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    // Simulate loading process (replace with actual API call if needed)
-    await Future.delayed(const Duration(seconds: 1));
-
-    setState(() {
-      isLoading = false;
-      // Initialize playlists here if you have a default set
-      playlists = [];
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
