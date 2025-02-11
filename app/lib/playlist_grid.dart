@@ -73,7 +73,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
           ),
           IconButton(
             onPressed: () async {
-              final savedMixes = await loadAllMixes();
+              final savedMixes = await Mix.loadAllMixes();
               // Navigate to the saved mixes list screen
               if (context.mounted) {
                 Navigator.push(context,
