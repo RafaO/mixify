@@ -119,7 +119,10 @@ class DatabaseHelper {
     return mixes;
   }
 
-  Future<void> deleteMix(Database db, String mixName) async {
-    await db.delete('mixes', where: 'mixName = ?', whereArgs: [mixName]);
+  Future<bool> deleteMix(String mixName) async {
+    final db = await database;
+    final deleted =
+        await db.delete('mixes', where: 'mixName = ?', whereArgs: [mixName]);
+    return deleted == 1;
   }
 }

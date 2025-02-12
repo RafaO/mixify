@@ -37,7 +37,7 @@ class MixListScreenState extends State<MixListScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: const Text('Delete'),
           ),
         ],
       ),
@@ -70,16 +70,50 @@ class MixListScreenState extends State<MixListScreen> {
               itemCount: mixes.length,
               itemBuilder: (context, index) {
                 final mix = mixes[index];
-                return ListTile(
-                  title: Text(mix.mixName),
-                  subtitle: Text('Songs added in the last: ${mix.timeRange}'),
-                  onTap: () {
-                    widget.onMixSelected(mix);
-                    Navigator.of(context).pop();
-                  },
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.white),
-                    onPressed: () => _deleteMix(mix),
+
+                return Card(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: ExpansionTile(
+                    title: Text(mix.mixName,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text('Songs added in the last: ${mix.timeRange}'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon:
+                              const Icon(Icons.play_arrow, color: Colors.green),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            widget.onMixSelected(mix);
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.white),
+                          onPressed: () => _deleteMix(mix),
+                        ),
+                      ],
+                    ),
+                    children: [
+                      Column(
+                        children: mix.playlists.map((playlist) {
+                          return Card(
+                            child: ListTile(
+                              leading: playlist.imageUrl != null
+                                  ? Image.network(
+                                      playlist.imageUrl!,
+                                      width: 40,
+                                      height: 40,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : const Icon(Icons.music_note),
+                              title: Text(playlist.name),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
                   ),
                 );
               },
