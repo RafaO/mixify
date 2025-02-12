@@ -35,44 +35,44 @@ class _PlaylistGridState extends State<PlaylistGrid> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
-          IconButton(
-            onPressed: playlists.isEmpty
-                ? null // TODO display a message to the user
-                : () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => SaveMixScreen(
-                          playlists: playlists,
-                          onSave: saveMix,
-                        ),
-                      ),
-                    );
-                  },
-            icon: const Icon(Icons.save),
-          ),
-          IconButton(
-            onPressed: () async {
-              final savedMixes = await Mix.loadAllMixes();
-              // Navigate to the saved mixes list screen
-              if (context.mounted) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MixListScreen(
-                      mixes: savedMixes,
-                      onMixSelected: (Mix mix) {
-                        setState(() {
-                          playlists = mix.playlists;
-                          selectedTimeRange = mix.timeRange;
-                        });
-                      },
-                    ),
-                  ),
-                );
-              }
-            },
-            icon: const Icon(Icons.list), // List icon to show saved mixes
-          )
+          // IconButton(
+          //   onPressed: playlists.isEmpty
+          //       ? null // TODO display a message to the user
+          //       : () {
+          //           Navigator.of(context).push(
+          //             MaterialPageRoute(
+          //               builder: (context) => SaveMixScreen(
+          //                 playlists: playlists,
+          //                 onSave: saveMix,
+          //               ),
+          //             ),
+          //           );
+          //         },
+          //   icon: const Icon(Icons.save),
+          // ),
+          // IconButton(
+          //   onPressed: () async {
+          //     final savedMixes = await Mix.loadAllMixes();
+          //     // Navigate to the saved mixes list screen
+          //     if (context.mounted) {
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) => MixListScreen(
+          //             mixes: savedMixes,
+          //             onMixSelected: (Mix mix) {
+          //               setState(() {
+          //                 playlists = mix.playlists;
+          //                 selectedTimeRange = mix.timeRange;
+          //               });
+          //             },
+          //           ),
+          //         ),
+          //       );
+          //     }
+          //   },
+          //   icon: const Icon(Icons.list), // List icon to show saved mixes
+          // )
         ],
       ),
       body: Padding(
