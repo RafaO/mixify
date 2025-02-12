@@ -6,8 +6,7 @@ class MixListScreen extends StatefulWidget {
   final List<Mix> mixes;
   final Function(Mix) onMixSelected;
 
-  const MixListScreen(
-      {Key? key, required this.mixes, required this.onMixSelected})
+  const MixListScreen({Key? key, required this.mixes, required this.onMixSelected})
       : super(key: key);
 
   @override
@@ -27,9 +26,18 @@ class MixListScreenState extends State<MixListScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Mix'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        title: const Row(
+          children: [
+            Icon(Icons.warning, color: Colors.red),
+            SizedBox(width: 10),
+            Text('Delete Mix'),
+          ],
+        ),
         content: const Text(
-            'Are you sure you want to delete this mix? This action cannot be undone.'),
+          'Are you sure you want to delete this mix? This action cannot be undone.',
+          style: TextStyle(fontSize: 16),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -37,7 +45,7 @@ class MixListScreenState extends State<MixListScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -53,7 +61,11 @@ class MixListScreenState extends State<MixListScreen> {
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to delete mix')),
+            const SnackBar(
+              content: Text('Failed to delete mix'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
           );
         }
       }
@@ -63,61 +75,77 @@ class MixListScreenState extends State<MixListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Saved Mixes')),
+      appBar: AppBar(
+        title: const Text('Saved Mixes'),
+      ),
       body: mixes.isEmpty
-          ? const Center(child: Text('No saved mixes yet!'))
+          ? const Center(
+        child: Text(
+          'No saved mixes yet!',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+        ),
+      )
           : ListView.builder(
-              itemCount: mixes.length,
-              itemBuilder: (context, index) {
-                final mix = mixes[index];
+        itemCount: mixes.length,
+        padding: const EdgeInsets.all(10),
+        itemBuilder: (context, index) {
+          final mix = mixes[index];
 
-                return Card(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  child: ExpansionTile(
-                    title: Text(mix.mixName,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text('Songs added in the last: ${mix.timeRange}'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon:
-                              const Icon(Icons.play_arrow, color: Colors.green),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            widget.onMixSelected(mix);
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.white),
-                          onPressed: () => _deleteMix(mix),
-                        ),
-                      ],
-                    ),
-                    children: [
-                      Column(
-                        children: mix.playlists.map((playlist) {
-                          return Card(
-                            child: ListTile(
-                              leading: playlist.imageUrl != null
-                                  ? Image.network(
-                                      playlist.imageUrl!,
-                                      width: 40,
-                                      height: 40,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : const Icon(Icons.music_note),
-                              title: Text(playlist.name),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ],
+          return Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            child: ExpansionTile(
+              tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              childrenPadding: const EdgeInsets.only(bottom: 10),
+              title: Text(
+                mix.mixName,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              subtitle: Text(
+                'Songs added in the last: ${mix.timeRange}',
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+              trailing: Wrap(
+                spacing: 5,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.play_arrow, color: Colors.green),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      widget.onMixSelected(mix);
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => _deleteMix(mix),
+                  ),
+                ],
+              ),
+              children: mix.playlists.map((playlist) {
+                return ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: playlist.imageUrl != null
+                        ? Image.network(
+                      playlist.imageUrl!,
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                    )
+                        : const Icon(Icons.music_note, size: 40, color: Colors.grey),
+                  ),
+                  title: Text(
+                    playlist.name,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                 );
-              },
+              }).toList(),
             ),
+          );
+        },
+      ),
     );
   }
 }

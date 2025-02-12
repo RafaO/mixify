@@ -8,6 +8,7 @@ import 'package:mixafy/playlist_card.dart';
 import 'package:mixafy/playlist_selector.dart';
 import 'package:mixafy/save_mix.dart';
 import 'package:mixafy/spotify_helper.dart';
+import 'package:mixafy/theme.dart';
 import 'package:mixafy/utils.dart';
 
 class PlaylistGrid extends StatefulWidget {
@@ -30,49 +31,47 @@ class _PlaylistGridState extends State<PlaylistGrid> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Mixafy',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: const Text('Mixafy'),
+        backgroundColor: greenColor,
         actions: [
-          // IconButton(
-          //   onPressed: playlists.isEmpty
-          //       ? null // TODO display a message to the user
-          //       : () {
-          //           Navigator.of(context).push(
-          //             MaterialPageRoute(
-          //               builder: (context) => SaveMixScreen(
-          //                 playlists: playlists,
-          //                 onSave: saveMix,
-          //               ),
-          //             ),
-          //           );
-          //         },
-          //   icon: const Icon(Icons.save),
-          // ),
-          // IconButton(
-          //   onPressed: () async {
-          //     final savedMixes = await Mix.loadAllMixes();
-          //     // Navigate to the saved mixes list screen
-          //     if (context.mounted) {
-          //       Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //           builder: (context) => MixListScreen(
-          //             mixes: savedMixes,
-          //             onMixSelected: (Mix mix) {
-          //               setState(() {
-          //                 playlists = mix.playlists;
-          //                 selectedTimeRange = mix.timeRange;
-          //               });
-          //             },
-          //           ),
-          //         ),
-          //       );
-          //     }
-          //   },
-          //   icon: const Icon(Icons.list), // List icon to show saved mixes
-          // )
+          IconButton(
+            onPressed: playlists.isEmpty
+                ? null // TODO display a message to the user
+                : () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => SaveMixScreen(
+                          playlists: playlists,
+                          onSave: saveMix,
+                        ),
+                      ),
+                    );
+                  },
+            icon: const Icon(Icons.save),
+          ),
+          IconButton(
+            onPressed: () async {
+              final savedMixes = await Mix.loadAllMixes();
+              // Navigate to the saved mixes list screen
+              if (context.mounted) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MixListScreen(
+                      mixes: savedMixes,
+                      onMixSelected: (Mix mix) {
+                        setState(() {
+                          playlists = mix.playlists;
+                          selectedTimeRange = mix.timeRange;
+                        });
+                      },
+                    ),
+                  ),
+                );
+              }
+            },
+            icon: const Icon(Icons.list), // List icon to show saved mixes
+          )
         ],
       ),
       body: Padding(
@@ -142,7 +141,6 @@ class _PlaylistGridState extends State<PlaylistGrid> {
             : () async {
                 setState(() => isLoading = true);
                 _showProgressDialog(context);
-
                 try {
                   await SpotifyHelper(apiService: widget.apiService).playMix(
                     playlists,
