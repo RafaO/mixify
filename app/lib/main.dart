@@ -98,31 +98,22 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
     const redirectUri = 'mixafy://callback';
+    // user-library-read is not working for some reason
     const scope =
-        "playlist-read-private, user-modify-playback-state, user-read-playback-state, user-read-currently-playing, user-library-read";
-
+        "playlist-read-private, user-modify-playback-state, user-read-playback-state, user-read-currently-playing";
     try {
-      // Check if Spotify is installed
-      bool isInstalled = await SpotifySdk.connectToSpotifyRemote(
+      // If installed, use Spotify SDK authentication
+      var accessToken = await SpotifySdk.getAccessToken(
         clientId: clientId,
         redirectUrl: redirectUri,
-      ).then((_) => true).catchError((_) => false);
-
-      if (isInstalled) {
-        // If installed, use Spotify SDK authentication
-        var accessToken = await SpotifySdk.getAccessToken(
-          clientId: clientId,
-          redirectUrl: redirectUri,
-          scope: scope,
-        );
-        widget._tokenManager.tokenReceived(accessToken);
-        setState(() {
-          authenticated = true;
-        });
-      } else {
-        if (mounted) _showSpotifyNotInstalledDialog(context);
-      }
+        scope: scope,
+      );
+      widget._tokenManager.tokenReceived(accessToken);
+      setState(() {
+        authenticated = true;
+      });
     } on Exception catch (e, s) {
+      if (mounted) _showSpotifyNotInstalledDialog(context);
       FirebaseCrashlytics.instance.recordError(e, s);
     }
   }
@@ -140,12 +131,12 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             // Ensure this image exists
             const SizedBox(width: 10),
-            const Text("Spotify app not found"),
+            const Text("Couldn't authenticate"),
           ],
         ),
         content: const Text(
-          "Mixafy requires the Spotify app to function properly. "
-          "Please install it and try again!",
+          "We couldn't authenticate you in Spotify. "
+          "Please check that you have the Spotify app installed, configured, and try again!",
         ),
         actions: [
           TextButton(
