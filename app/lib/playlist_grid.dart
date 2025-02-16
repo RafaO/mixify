@@ -142,29 +142,36 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                 setState(() => isLoading = true);
                 _showProgressDialog(context);
                 try {
-                  await SpotifyHelper(apiService: widget.apiService).playMix(
-                    playlists,
-                    selectedTimeRange,
-                  );
+                  Result playing =
+                      await SpotifyHelper(apiService: widget.apiService)
+                          .playMix(playlists, selectedTimeRange);
+
                   if (!context.mounted) return;
                   Navigator.of(context).pop();
-                  bool launched = await openSpotify();
-                  if (!launched) {
-                    _showAlertDialog(
-                      context,
-                      'Started!',
-                      'Spotify should be now playing your mix! Enjoy!',
+
+                  if (playing.isSuccess) {
+                    showMixafyDialog(
+                      context: context,
+                      title: 'Started!',
+                      message: 'Spotify should now be playing your mix! Enjoy!',
+                    );
+                  } else {
+                    showMixafyDialog(
+                      context: context,
+                      title: 'Could not start',
+                      message: playing.error ??
+                          'There was a problem playing your mix',
                     );
                   }
                 } catch (e) {
-                  debugPrint("error playing the mix");
-                  Navigator.of(context).pop();
+                  debugPrint("Error playing mix: \n${e.toString()}");
+                  if (context.mounted) Navigator.of(context).pop();
                   await Future.delayed(const Duration(milliseconds: 100));
                   if (!context.mounted) return;
-                  _showAlertDialog(
-                    context,
-                    'Could not start',
-                    'Please start your Spotify app on any device and try again.',
+                  showMixafyDialog(
+                    context: context,
+                    title: 'Could not start',
+                    message: 'There was a problem playing your mix',
                   );
                 } finally {
                   if (context.mounted) setState(() => isLoading = false);
@@ -382,26 +389,6 @@ class _PlaylistGridState extends State<PlaylistGrid> {
               ],
             ),
           ),
-        );
-      },
-    );
-  }
-
-  void _showAlertDialog(BuildContext context, String title, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
         );
       },
     );

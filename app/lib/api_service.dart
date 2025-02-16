@@ -200,10 +200,9 @@ class APIService {
       _fetchSongs('/v1/me/tracks', timeRange);
 
   Future<List<SpotifySong>> _fetchSongs(
-    String playlistId,
+    String url,
     TimeRange timeRange,
   ) async {
-    final String baseUrl = '/v1/playlists/$playlistId/tracks';
     List<SpotifySong> playlistSongs = [];
     int offset = 0;
     const int limit = 100; // Spotify's max limit per page
@@ -213,7 +212,7 @@ class APIService {
     while (true) {
       // Construct the request URL with pagination parameters
       final response = await _dio.get(
-        baseUrl,
+        url,
         queryParameters: {
           'limit': limit,
           'offset': offset,
