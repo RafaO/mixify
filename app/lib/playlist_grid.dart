@@ -157,8 +157,8 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                     );
                   }
                 } catch (e) {
-                  debugPrint("error playing the mix");
-                  Navigator.of(context).pop();
+                  debugPrint("error playing mix: \n${e.toString()}");
+                  if (context.mounted) Navigator.of(context).pop();
                   await Future.delayed(const Duration(milliseconds: 100));
                   if (!context.mounted) return;
                   _showAlertDialog(
