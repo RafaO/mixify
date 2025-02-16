@@ -10,6 +10,7 @@ import 'package:mixafy/auth_view.dart';
 import 'package:mixafy/playlist_grid.dart';
 import 'package:mixafy/theme.dart';
 import 'package:mixafy/token_manager.dart';
+import 'package:mixafy/utils.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -119,46 +120,18 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _showSpotifyNotInstalledDialog(BuildContext context) {
-    showDialog(
+    showMixafyDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            Image.asset(
-              'assets/Spotify_Icon_CMYK_Black.png',
-              height: 24,
-            ),
-            // Ensure this image exists
-            const SizedBox(width: 10),
-            const Text("Couldn't authenticate"),
-          ],
-        ),
-        content: const Text(
-          "We couldn't authenticate you in Spotify. "
+      title: "Couldn't authenticate",
+      message: "We couldn't authenticate you in Spotify. "
           "Please check that you have the Spotify app installed, configured, and try again!",
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Close"),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green, // Spotify theme color
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-              _openSpotifyStore();
-            },
-            child: const Text("Get Spotify"),
-          ),
-        ],
-      ),
+      assetImage: 'assets/Spotify_Icon_CMYK_Black.png',
+      primaryButtonText: "Get Spotify",
+      onPrimaryPressed: () {
+        Navigator.of(context).pop();
+        _openSpotifyStore();
+      },
+      secondaryButtonText: "Close",
     );
   }
 

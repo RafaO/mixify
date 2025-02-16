@@ -5,12 +5,23 @@ import 'package:mixafy/entities/spotify_playlist.dart';
 import 'package:mixafy/entities/spotify_song.dart';
 import 'package:mixafy/entities/time_range.dart';
 
+class Result<T> {
+  final T? data;
+  final String? error;
+
+  Result.success({this.data}) : error = null;
+
+  Result.failure(this.error) : data = null;
+
+  bool get isSuccess => error == null;
+}
+
 class SpotifyHelper {
   final APIService _apiService;
 
   SpotifyHelper({required APIService apiService}) : _apiService = apiService;
 
-  Future<void> playMix(
+  Future<Result<void>> playMix(
     List<SpotifyPlaylist> playlists,
     TimeRange timeRange,
   ) async {
@@ -18,7 +29,8 @@ class SpotifyHelper {
     String deviceId = await _apiService.getActiveDevice();
     if (deviceId.isEmpty) {
       debugPrint("No active device found.");
-      return;
+      return Result.failure(
+          "Please start your Spotify app on any device and try again.");
     }
 
     // Step 2: Fetch and mix songs from playlists
@@ -29,8 +41,9 @@ class SpotifyHelper {
 
     if (listOfSongs.isEmpty) {
       debugPrint("No songs found in the playlists.");
-      // TODO handle this case
-      return;
+      return Result.failure(
+          "It seems we couldn't find songs matching your criteria."
+          " Please, review them and try again.");
     }
 
     bool useQueue = false;
@@ -75,5 +88,6 @@ class SpotifyHelper {
       }
     }
     debugPrint("Mix successfully played.");
+    return Result.success();
   }
 }
