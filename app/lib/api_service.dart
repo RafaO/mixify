@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:mixafy/entities/artist.dart';
 import 'package:mixafy/entities/spotify_playlist.dart';
 import 'package:mixafy/entities/spotify_song.dart';
 import 'package:mixafy/entities/time_range.dart';
@@ -252,5 +253,25 @@ class APIService {
     }
 
     return playlistSongs;
+  }
+
+  Future<List<Artist>> getUserSavedArtists() async {
+    final response = await _dio.get('/v1/me/following?type=artist');
+    if (response.statusCode == 200) {
+      List<dynamic> items = response.data['artists']['items'];
+      return items.map((artist) => Artist(artist['id'], name: artist['name'])).toList();
+    }
+    return [];
+  }
+
+  Future<List<SpotifySong>> getPopularTracks(String artistId) async {
+    final response = await _dio.get('/v1/artists/$artistId/top-tracks');
+    if (response.statusCode == 200) {
+      List<dynamic> tracks = response.data['tracks'];
+      return tracks
+          .map((track) => SpotifySong(track['uri'], name: track['name']))
+          .toList();
+    }
+    return [];
   }
 }

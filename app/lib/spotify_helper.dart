@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mixafy/api_service.dart';
+import 'package:mixafy/entities/artist.dart';
 import 'package:mixafy/entities/spotify_playlist.dart';
 import 'package:mixafy/entities/spotify_song.dart';
 import 'package:mixafy/entities/time_range.dart';
@@ -89,5 +90,25 @@ class SpotifyHelper {
     }
     debugPrint("Mix successfully played.");
     return Result.success();
+  }
+
+  /// Fetches the user's saved artists
+  Future<Result<List<Artist>>> getUserSavedArtists() async {
+    try {
+      final response = await _apiService.getUserSavedArtists();
+      return Result.success(data: response);
+    } catch (e) {
+      return Result.failure("Failed to fetch saved artists: \${e.toString()}");
+    }
+  }
+
+  /// Fetches the popular tracks of a given artist
+  Future<Result<List<SpotifySong>>> getPopularTracksFromArtist(String artistId) async {
+    try {
+      final response = await _apiService.getPopularTracks(artistId);
+      return Result.success(data: response);
+    } catch (e) {
+      return Result.failure("Failed to fetch popular tracks: \${e.toString()}");
+    }
   }
 }
