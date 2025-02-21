@@ -62,7 +62,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   late final APIService _apiService;
 
   bool authenticated = false;
@@ -80,13 +80,32 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       tokenManager: widget._tokenManager,
     );
-    widget._tokenManager.getTokenFromStorage().then((token) {
-      if (token != null && token.isNotEmpty) {
+    widget._tokenManager.isTokenValid().then((valid) {
+      if (valid) {
         setState(() {
           authenticated = true;
         });
       }
     });
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkAuth();
+    }
+  }
+
+  Future<void> _checkAuth() async {
+    bool valid = await widget._tokenManager.isTokenValid();
+
+    if (mounted && !valid) {
+      setState(() {
+        authenticated = false;
+        Navigator.popUntil(context, ModalRoute.withName('/'));
+      });
+    }
   }
 
   Future<void> authenticateWithSpotify() async {
