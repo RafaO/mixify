@@ -120,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     const redirectUri = 'mixafy://callback';
     // user-library-read is not working for some reason
     const scope =
-        "playlist-read-private, user-modify-playback-state, user-read-playback-state, user-read-currently-playing";
+        "playlist-read-private, user-modify-playback-state, user-read-playback-state, user-read-currently-playing, user-follow-read";
     try {
       // If installed, use Spotify SDK authentication
       var accessToken = await SpotifySdk.getAccessToken(
