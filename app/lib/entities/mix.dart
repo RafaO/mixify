@@ -1,11 +1,11 @@
 import 'package:mixafy/database_helper.dart';
-import 'package:mixafy/entities/spotify_playlist.dart';
 import 'package:mixafy/entities/time_range.dart';
+import 'package:mixafy/playlist_selector.dart';
 
 class Mix {
   final String mixName;
   final String userId;
-  final List<SpotifyPlaylist> playlists;
+  final List<SelectableItem> playlists;
   final TimeRange timeRange;
 
   Mix({

@@ -21,7 +21,7 @@ class PlaylistGrid extends StatefulWidget {
 }
 
 class _PlaylistGridState extends State<PlaylistGrid> {
-  List<SpotifyPlaylist> playlists = [];
+  List<SelectableItem> items = [];
   bool isLoading = false;
   TimeRange selectedTimeRange = TimeRange.oneMonth();
 
@@ -35,13 +35,13 @@ class _PlaylistGridState extends State<PlaylistGrid> {
         backgroundColor: greenColor,
         actions: [
           IconButton(
-            onPressed: playlists.isEmpty
+            onPressed: items.isEmpty
                 ? null // TODO display a message to the user
                 : () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => SaveMixScreen(
-                          playlists: playlists,
+                          items: items,
                           onSave: saveMix,
                         ),
                       ),
@@ -61,7 +61,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                       mixes: savedMixes,
                       onMixSelected: (Mix mix) {
                         setState(() {
-                          playlists = mix.playlists;
+                          items = mix.playlists;
                           selectedTimeRange = mix.timeRange;
                         });
                       },
@@ -102,7 +102,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                   ),
                   const SizedBox(height: 16),
                   Expanded(
-                    child: playlists.isEmpty
+                    child: items.isEmpty
                         ? _buildEmptyState(context, theme)
                         : GridView.builder(
                             gridDelegate:
@@ -111,15 +111,15 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                               crossAxisSpacing: 16.0,
                               mainAxisSpacing: 16.0,
                             ),
-                            itemCount: playlists.length + 1,
+                            itemCount: items.length + 1,
                             itemBuilder: (context, index) {
-                              if (index < playlists.length) {
-                                final playlist = playlists[index];
+                              if (index < items.length) {
+                                final playlist = items[index];
                                 return PlaylistCard(
                                   playlist: playlist,
                                   onRemove: (playlistToRemove) {
                                     setState(() {
-                                      playlists.remove(playlistToRemove);
+                                      items.remove(playlistToRemove);
                                     });
                                   },
                                 );
@@ -133,10 +133,10 @@ class _PlaylistGridState extends State<PlaylistGrid> {
               ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: playlists.isEmpty || isLoading
+        backgroundColor: items.isEmpty || isLoading
             ? Colors.grey.shade400
             : theme.colorScheme.primary,
-        onPressed: playlists.isEmpty || isLoading
+        onPressed: items.isEmpty || isLoading
             ? null
             : () async {
                 setState(() => isLoading = true);
@@ -144,7 +144,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                 try {
                   Result playing =
                       await SpotifyHelper(apiService: widget.apiService)
-                          .playMix(playlists, selectedTimeRange);
+                          .playMix(items, selectedTimeRange);
 
                   if (!context.mounted) return;
                   Navigator.of(context).pop();
@@ -191,7 +191,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                 'assets/Spotify_Icon_CMYK_Black.png',
                 width: 24.0,
                 height: 24.0,
-                color: playlists.isEmpty ? Colors.grey.shade700 : null,
+                color: items.isEmpty ? Colors.grey.shade700 : null,
               ),
         label: isLoading
             ? const Text("Loading...", style: TextStyle(color: Colors.black))
@@ -199,7 +199,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
                 "Play on Spotify",
                 style: TextStyle(
                   color:
-                      playlists.isEmpty ? Colors.grey.shade700 : Colors.black,
+                      items.isEmpty ? Colors.grey.shade700 : Colors.black,
                 ),
               ),
       ),
@@ -225,7 +225,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
     final mix = Mix(
       mixName: mixName,
       userId: "me", // TODO
-      playlists: playlists,
+      playlists: items,
       timeRange: selectedTimeRange,
     );
 
@@ -265,13 +265,13 @@ class _PlaylistGridState extends State<PlaylistGrid> {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => PlaylistSelector(
               apiService: widget.apiService,
-              onSelectedPlaylists: (selectedPlaylists) {
+              onSelectionChanged: (selectedItems) {
                 setState(() {
-                  playlists.clear();
-                  playlists.addAll(selectedPlaylists);
+                  items.clear();
+                  items.addAll(selectedItems);
                 });
               },
-              alreadySelectedPlaylists: playlists,
+              alreadySelectedItems: items,
             ),
           ));
         },
@@ -309,12 +309,13 @@ class _PlaylistGridState extends State<PlaylistGrid> {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => PlaylistSelector(
                   apiService: widget.apiService,
-                  onSelectedPlaylists: (selectedPlaylists) {
+                  onSelectionChanged: (selectedItems) {
                     setState(() {
-                      playlists.addAll(selectedPlaylists);
+                      items.clear();
+                      items.addAll(selectedItems);
                     });
                   },
-                  alreadySelectedPlaylists: playlists,
+                  alreadySelectedItems: items,
                 ),
               ));
             },

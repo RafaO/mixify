@@ -3,186 +3,184 @@ import 'package:mixafy/api_service.dart';
 import 'package:mixafy/entities/artist.dart';
 import 'package:mixafy/entities/spotify_playlist.dart';
 
+abstract class SelectableItem {
+  String get name;
+
+  String? get imageUrl;
+
+  String get id;
+
+  String? get description;
+}
+
 class PlaylistSelector extends StatefulWidget {
   final APIService apiService;
-  final Function(List<SpotifyPlaylist>) onSelectedPlaylists;
-  final List<SpotifyPlaylist> alreadySelectedPlaylists;
+  final Function(List<SelectableItem>) onSelectionChanged;
+  final List<SelectableItem> alreadySelectedItems;
 
   const PlaylistSelector({
     Key? key,
     required this.apiService,
-    required this.onSelectedPlaylists,
-    required this.alreadySelectedPlaylists,
+    required this.onSelectionChanged,
+    required this.alreadySelectedItems,
   }) : super(key: key);
 
   @override
   State<PlaylistSelector> createState() => _PlaylistSelectorState();
 }
 
-class _PlaylistSelectorState extends State<PlaylistSelector>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  late List<SpotifyPlaylist> playlists;
-  late List<SpotifyPlaylist> filteredPlaylists;
-  late List<Artist> artists;
-  late List<Artist> filteredArtists;
-  late List<SpotifyPlaylist> selectedPlaylists;
+class _PlaylistSelectorState extends State<PlaylistSelector> {
+  late List<SelectableItem> selectedItems;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedItems = List.from(widget.alreadySelectedItems);
+  }
+
+  void _toggleSelection(SelectableItem item) {
+    setState(() {
+      if (selectedItems.contains(item)) {
+        selectedItems.remove(item);
+      } else {
+        selectedItems.add(item);
+      }
+    });
+    widget.onSelectionChanged(selectedItems);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Select Items'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.check),
+              onPressed: () {
+                Navigator.pop(context, selectedItems);
+              },
+            ),
+          ],
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Playlists'),
+              Tab(text: 'Artists'),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            SelectableList<SpotifyPlaylist>(
+              fetchItems: widget.apiService.fetchPlaylists,
+              selectedItems: selectedItems,
+              onToggleSelection: _toggleSelection,
+            ),
+            SelectableList<Artist>(
+              fetchItems: widget.apiService.getUserSavedArtists,
+              selectedItems: selectedItems,
+              onToggleSelection: _toggleSelection,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SelectableList<T extends SelectableItem> extends StatefulWidget {
+  final Future<List<T>> Function() fetchItems;
+  final List<SelectableItem> selectedItems;
+  final Function(SelectableItem) onToggleSelection;
+
+  const SelectableList({
+    Key? key,
+    required this.fetchItems,
+    required this.selectedItems,
+    required this.onToggleSelection,
+  }) : super(key: key);
+
+  @override
+  State<SelectableList<T>> createState() => _SelectableListState<T>();
+}
+
+class _SelectableListState<T extends SelectableItem>
+    extends State<SelectableList<T>> {
+  late List<T> items;
+  late List<T> filteredItems;
   bool isLoading = true;
   TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    playlists = [];
-    filteredPlaylists = [];
-    artists = [];
-    filteredArtists = [];
-    selectedPlaylists = List.from(widget.alreadySelectedPlaylists);
-    _tabController.addListener(() {
-      if (_tabController.indexIsChanging) {
-        _clearSearch();
-      }
-    });
-    _fetchData();
+    items = [];
+    filteredItems = [];
+    _fetchItems();
   }
 
-  Future<void> _fetchData() async {
-    final fetchedPlaylists = await widget.apiService.fetchPlaylists();
-    final fetchedArtists = await widget.apiService.getUserSavedArtists();
+  Future<void> _fetchItems() async {
+    final fetchedItems = await widget.fetchItems();
     setState(() {
-      playlists = fetchedPlaylists;
-      filteredPlaylists = fetchedPlaylists;
-      artists = fetchedArtists;
-      filteredArtists = fetchedArtists;
+      items = fetchedItems;
+      filteredItems = fetchedItems;
       isLoading = false;
     });
   }
 
   void _filterItems(String query) {
     setState(() {
-      if (_tabController.index == 0) { // If Playlists tab is selected
-        filteredPlaylists = playlists
-            .where((playlist) =>
-            playlist.name.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      } else { // If Artists tab is selected
-        filteredArtists = artists
-            .where((artist) =>
-            artist.name.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      }
-    });
-  }
-
-  void _clearSearch() {
-    searchController.clear();
-    _filterItems(''); // Reset the filter
-  }
-
-  void _togglePlaylistSelection(SpotifyPlaylist playlist) {
-    setState(() {
-      if (selectedPlaylists.contains(playlist)) {
-        selectedPlaylists.remove(playlist);
-      } else {
-        selectedPlaylists.add(playlist);
-      }
+      filteredItems = items
+          .where(
+              (item) => item.name.toLowerCase().contains(query.toLowerCase()))
+          .toList();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Select items'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: () {
-              widget.onSelectedPlaylists(selectedPlaylists);
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: searchController,
-              onChanged: _filterItems,
-              decoration: InputDecoration(
-                labelText: 'Search',
-                hintText: 'Start typing to filter',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: searchController.text.isNotEmpty
-                    ? IconButton(
-                  icon: const Icon(Icons.cancel_outlined),
-                  onPressed: _clearSearch, // Clear the search
-                )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                ),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            controller: searchController,
+            onChanged: _filterItems,
+            decoration: InputDecoration(
+              labelText: 'Search',
+              prefixIcon: const Icon(Icons.search),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30.0),
               ),
             ),
           ),
-          TabBar(
-            controller: _tabController,
-            tabs: const [
-              Tab(text: 'Playlists'),
-              Tab(text: 'Artists'),
-            ],
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildPlaylistList(),
-                _buildArtistList(),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPlaylistList() {
-    return isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : ListView.builder(
-      itemCount: filteredPlaylists.length,
-      itemBuilder: (context, index) {
-        final playlist = filteredPlaylists[index];
-        final isSelected = selectedPlaylists.contains(playlist);
-        return ListTile(
-          leading: playlist.imageUrl != null
-              ? CircleAvatar(
-              backgroundImage: NetworkImage(playlist.imageUrl!))
-              : const Icon(Icons.music_note),
-          title: Text(playlist.name),
-          trailing: isSelected
-              ? const Icon(Icons.check_circle, color: Colors.green)
-              : const Icon(Icons.circle_outlined),
-          onTap: () => _togglePlaylistSelection(playlist),
-        );
-      },
-    );
-  }
-
-  Widget _buildArtistList() {
-    return isLoading
-        ? const Center(child: CircularProgressIndicator())
-        : ListView.builder(
-      itemCount: filteredArtists.length,
-      itemBuilder: (context, index) {
-        final artist = filteredArtists[index];
-        return ListTile(
-          title: Text(artist.name),
-        );
-      },
+        ),
+        Expanded(
+          child: isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView.builder(
+                  itemCount: filteredItems.length,
+                  itemBuilder: (context, index) {
+                    final item = filteredItems[index];
+                    final isSelected = widget.selectedItems.contains(item);
+                    return ListTile(
+                      leading: item.imageUrl != null
+                          ? CircleAvatar(
+                              backgroundImage: NetworkImage(item.imageUrl!),
+                            )
+                          : const Icon(Icons.music_note),
+                      title: Text(item.name),
+                      trailing: isSelected
+                          ? const Icon(Icons.check_circle, color: Colors.green)
+                          : const Icon(Icons.circle_outlined),
+                      onTap: () => widget.onToggleSelection(item),
+                    );
+                  },
+                ),
+        ),
+      ],
     );
   }
 }

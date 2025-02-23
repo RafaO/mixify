@@ -259,7 +259,13 @@ class APIService {
     final response = await _dio.get('/v1/me/following?type=artist');
     if (response.statusCode == 200) {
       List<dynamic> items = response.data['artists']['items'];
-      return items.map((artist) => Artist(artist['id'], name: artist['name'])).toList();
+      return items
+          .map((artist) => Artist(
+                artist['id'],
+                name: artist['name'],
+                imageUrl: artist['images']?[0]['url'],
+              ))
+          .toList();
     }
     return [];
   }

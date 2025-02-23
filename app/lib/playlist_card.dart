@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mixafy/entities/spotify_playlist.dart';
+import 'package:mixafy/playlist_selector.dart';
 
 class PlaylistCard extends StatelessWidget {
-  final SpotifyPlaylist playlist;
+  final SelectableItem playlist;
   final Function(dynamic) onRemove;
 
   const PlaylistCard({

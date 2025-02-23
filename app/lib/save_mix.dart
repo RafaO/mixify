@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mixafy/entities/spotify_playlist.dart';
+import 'package:mixafy/playlist_selector.dart';
 
 class SaveMixScreen extends StatefulWidget {
-  final List<SpotifyPlaylist> playlists;
+  final List<SelectableItem> items;
   final Function(String mixName) onSave;
 
   const SaveMixScreen({
     Key? key,
-    required this.playlists,
+    required this.items,
     required this.onSave,
   }) : super(key: key);
 
@@ -45,27 +45,27 @@ class _SaveMixScreenState extends State<SaveMixScreen> {
             ),
             const SizedBox(height: 8),
             Expanded(
-              child: widget.playlists.isEmpty
+              child: widget.items.isEmpty
                   ? const Center(child: Text("No playlists selected"))
                   : ListView.builder(
-                itemCount: widget.playlists.length,
-                itemBuilder: (context, index) {
-                  final playlist = widget.playlists[index];
-                  return Card(
-                    child: ListTile(
-                      leading: playlist.imageUrl != null
-                          ? Image.network(
-                        playlist.imageUrl!,
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.cover,
-                      )
-                          : const Icon(Icons.music_note),
-                      title: Text(playlist.name),
+                      itemCount: widget.items.length,
+                      itemBuilder: (context, index) {
+                        final playlist = widget.items[index];
+                        return Card(
+                          child: ListTile(
+                            leading: playlist.imageUrl != null
+                                ? Image.network(
+                                    playlist.imageUrl!,
+                                    width: 40,
+                                    height: 40,
+                                    fit: BoxFit.cover,
+                                  )
+                                : const Icon(Icons.music_note),
+                            title: Text(playlist.name),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
             const SizedBox(height: 16),
             Center(

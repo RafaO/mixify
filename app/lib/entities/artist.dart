@@ -1,6 +1,15 @@
-class Artist {
-  final String id;
-  final String name;
+import 'package:mixafy/playlist_selector.dart';
 
-  Artist(this.id, {required this.name});
+class Artist implements SelectableItem {
+  @override
+  final String id;
+  @override
+  final String name;
+  @override
+  final String? imageUrl;
+  @override
+  final String? description;
+
+  Artist(this.id,
+      {required this.name, required this.imageUrl, this.description});
 }

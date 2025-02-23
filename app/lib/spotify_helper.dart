@@ -5,6 +5,7 @@ import 'package:mixafy/entities/artist.dart';
 import 'package:mixafy/entities/spotify_playlist.dart';
 import 'package:mixafy/entities/spotify_song.dart';
 import 'package:mixafy/entities/time_range.dart';
+import 'package:mixafy/playlist_selector.dart';
 
 class Result<T> {
   final T? data;
@@ -23,7 +24,7 @@ class SpotifyHelper {
   SpotifyHelper({required APIService apiService}) : _apiService = apiService;
 
   Future<Result<void>> playMix(
-    List<SpotifyPlaylist> playlists,
+    List<SelectableItem> playlists,
     TimeRange timeRange,
   ) async {
     // Step 1: Get the active device
@@ -36,7 +37,10 @@ class SpotifyHelper {
 
     // Step 2: Fetch and mix songs from playlists
     final listOfSongs = await _apiService.fetchAndMixAllSongsFromPlaylists(
-      playlists.map((playlist) => playlist.id).toList(),
+      playlists
+          .whereType<SpotifyPlaylist>() // TODO for now ignoring artists
+          .map((playlist) => playlist.id)
+          .toList(),
       timeRange,
     );
 
@@ -103,7 +107,8 @@ class SpotifyHelper {
   }
 
   /// Fetches the popular tracks of a given artist
-  Future<Result<List<SpotifySong>>> getPopularTracksFromArtist(String artistId) async {
+  Future<Result<List<SpotifySong>>> getPopularTracksFromArtist(
+      String artistId) async {
     try {
       final response = await _apiService.getPopularTracks(artistId);
       return Result.success(data: response);
