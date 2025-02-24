@@ -160,6 +160,15 @@ class _SelectableListState<T extends SelectableItem>
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(30.0),
               ),
+              suffixIcon: searchController.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.cancel_outlined),
+                      onPressed: () {
+                        searchController.clear();
+                        _filterItems(''); // Reset the search
+                      },
+                    )
+                  : null,
             ),
           ),
         ),
