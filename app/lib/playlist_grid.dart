@@ -263,7 +263,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
         borderRadius: BorderRadius.circular(12.0),
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => PlaylistSelector(
+            builder: (context) => ItemsSelector(
               apiService: widget.apiService,
               onSelectionChanged: (selectedItems) {
                 setState(() {
@@ -307,7 +307,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => PlaylistSelector(
+                builder: (context) => ItemsSelector(
                   apiService: widget.apiService,
                   onSelectionChanged: (selectedItems) {
                     setState(() {

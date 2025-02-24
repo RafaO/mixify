@@ -13,12 +13,12 @@ abstract class SelectableItem {
   String? get description;
 }
 
-class PlaylistSelector extends StatefulWidget {
+class ItemsSelector extends StatefulWidget {
   final APIService apiService;
   final Function(List<SelectableItem>) onSelectionChanged;
   final List<SelectableItem> alreadySelectedItems;
 
-  const PlaylistSelector({
+  const ItemsSelector({
     Key? key,
     required this.apiService,
     required this.onSelectionChanged,
@@ -26,10 +26,10 @@ class PlaylistSelector extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<PlaylistSelector> createState() => _PlaylistSelectorState();
+  State<ItemsSelector> createState() => _ItemsSelectorState();
 }
 
-class _PlaylistSelectorState extends State<PlaylistSelector> {
+class _ItemsSelectorState extends State<ItemsSelector> {
   late List<SelectableItem> selectedItems;
 
   @override
