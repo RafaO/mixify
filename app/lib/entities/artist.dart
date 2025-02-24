@@ -1,3 +1,4 @@
+import 'package:mixafy/entities/selectable_item.dart';
 import 'package:mixafy/items_selector.dart';
 
 class Artist implements SelectableItem {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mixafy/items_selector.dart';
+import 'package:mixafy/entities/selectable_item.dart';
 
 class PlaylistCard extends StatelessWidget {
   final SelectableItem playlist;

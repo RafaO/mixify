@@ -2,10 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mixafy/api_service.dart';
 import 'package:mixafy/entities/artist.dart';
+import 'package:mixafy/entities/selectable_item.dart';
 import 'package:mixafy/entities/spotify_playlist.dart';
 import 'package:mixafy/entities/spotify_song.dart';
 import 'package:mixafy/entities/time_range.dart';
-import 'package:mixafy/items_selector.dart';
 
 class Result<T> {
   final T? data;

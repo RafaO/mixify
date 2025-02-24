@@ -1,17 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mixafy/api_service.dart';
 import 'package:mixafy/entities/artist.dart';
+import 'package:mixafy/entities/selectable_item.dart';
 import 'package:mixafy/entities/spotify_playlist.dart';
-
-abstract class SelectableItem {
-  String get name;
-
-  String? get imageUrl;
-
-  String get id;
-
-  String? get description;
-}
 
 class ItemsSelector extends StatefulWidget {
   final APIService apiService;
