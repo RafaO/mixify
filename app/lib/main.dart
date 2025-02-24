@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mixafy/api_service.dart';
 import 'package:mixafy/auth_view.dart';
-import 'package:mixafy/playlist_grid.dart';
+import 'package:mixafy/items_grid.dart';
 import 'package:mixafy/theme.dart';
 import 'package:mixafy/token_manager.dart';
 import 'package:mixafy/utils.dart';
@@ -62,7 +62,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   late final APIService _apiService;
 
   bool authenticated = false;
@@ -80,13 +80,32 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       tokenManager: widget._tokenManager,
     );
-    widget._tokenManager.getTokenFromStorage().then((token) {
-      if (token != null && token.isNotEmpty) {
+    widget._tokenManager.isTokenValid().then((valid) {
+      if (valid) {
         setState(() {
           authenticated = true;
         });
       }
     });
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkAuth();
+    }
+  }
+
+  Future<void> _checkAuth() async {
+    bool valid = await widget._tokenManager.isTokenValid();
+
+    if (mounted && !valid) {
+      setState(() {
+        authenticated = false;
+        Navigator.popUntil(context, ModalRoute.withName('/'));
+      });
+    }
   }
 
   Future<void> authenticateWithSpotify() async {
@@ -101,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const redirectUri = 'mixafy://callback';
     // user-library-read is not working for some reason
     const scope =
-        "playlist-read-private, user-modify-playback-state, user-read-playback-state, user-read-currently-playing";
+        "playlist-read-private, user-modify-playback-state, user-read-playback-state, user-read-currently-playing, user-follow-read";
     try {
       // If installed, use Spotify SDK authentication
       var accessToken = await SpotifySdk.getAccessToken(
@@ -150,7 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return authenticated
-        ? PlaylistGrid(apiService: _apiService)
+        ? ItemsGrid(apiService: _apiService)
         : AuthView(onButtonPressed: authenticateWithSpotify);
   }
 }

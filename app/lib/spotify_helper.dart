@@ -1,6 +1,10 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mixafy/api_service.dart';
+import 'package:mixafy/entities/artist.dart';
+import 'package:mixafy/entities/selectable_item.dart';
 import 'package:mixafy/entities/spotify_playlist.dart';
 import 'package:mixafy/entities/spotify_song.dart';
 import 'package:mixafy/entities/time_range.dart';
@@ -22,7 +26,7 @@ class SpotifyHelper {
   SpotifyHelper({required APIService apiService}) : _apiService = apiService;
 
   Future<Result<void>> playMix(
-    List<SpotifyPlaylist> playlists,
+    List<SelectableItem> items,
     TimeRange timeRange,
   ) async {
     // Step 1: Get the active device
@@ -35,9 +39,19 @@ class SpotifyHelper {
 
     // Step 2: Fetch and mix songs from playlists
     final listOfSongs = await _apiService.fetchAndMixAllSongsFromPlaylists(
-      playlists.map((playlist) => playlist.id).toList(),
+      items
+          .whereType<SpotifyPlaylist>()
+          .map((playlist) => playlist.id)
+          .toList(),
       timeRange,
     );
+
+    for (var artist in items.whereType<Artist>()) {
+      final result = await getPopularTracksFromArtist(artist.id);
+      if (result.isSuccess && result.data != null) {
+        listOfSongs.addAll(result.data!);
+      }
+    }
 
     if (listOfSongs.isEmpty) {
       debugPrint("No songs found in the playlists.");
@@ -45,6 +59,9 @@ class SpotifyHelper {
           "It seems we couldn't find songs matching your criteria."
           " Please, review them and try again.");
     }
+
+    // Shuffle the list of songs
+    listOfSongs.shuffle(Random());
 
     bool useQueue = false;
 
@@ -89,5 +106,26 @@ class SpotifyHelper {
     }
     debugPrint("Mix successfully played.");
     return Result.success();
+  }
+
+  /// Fetches the user's saved artists
+  Future<Result<List<Artist>>> getUserSavedArtists() async {
+    try {
+      final response = await _apiService.getUserSavedArtists();
+      return Result.success(data: response);
+    } catch (e) {
+      return Result.failure("Failed to fetch saved artists: \${e.toString()}");
+    }
+  }
+
+  /// Fetches the popular tracks of a given artist
+  Future<Result<List<SpotifySong>>> getPopularTracksFromArtist(
+      String artistId) async {
+    try {
+      final response = await _apiService.getPopularTracks(artistId);
+      return Result.success(data: response);
+    } catch (e) {
+      return Result.failure("Failed to fetch popular tracks: \${e.toString()}");
+    }
   }
 }
