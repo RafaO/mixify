@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mixafy/api_service.dart';
@@ -24,7 +26,7 @@ class SpotifyHelper {
   SpotifyHelper({required APIService apiService}) : _apiService = apiService;
 
   Future<Result<void>> playMix(
-    List<SelectableItem> playlists,
+    List<SelectableItem> items,
     TimeRange timeRange,
   ) async {
     // Step 1: Get the active device
@@ -37,12 +39,19 @@ class SpotifyHelper {
 
     // Step 2: Fetch and mix songs from playlists
     final listOfSongs = await _apiService.fetchAndMixAllSongsFromPlaylists(
-      playlists
-          .whereType<SpotifyPlaylist>() // TODO for now ignoring artists
+      items
+          .whereType<SpotifyPlaylist>()
           .map((playlist) => playlist.id)
           .toList(),
       timeRange,
     );
+
+    for (var artist in items.whereType<Artist>()) {
+      final result = await getPopularTracksFromArtist(artist.id);
+      if (result.isSuccess && result.data != null) {
+        listOfSongs.addAll(result.data!);
+      }
+    }
 
     if (listOfSongs.isEmpty) {
       debugPrint("No songs found in the playlists.");
@@ -50,6 +59,9 @@ class SpotifyHelper {
           "It seems we couldn't find songs matching your criteria."
           " Please, review them and try again.");
     }
+
+    // Shuffle the list of songs
+    listOfSongs.shuffle(Random());
 
     bool useQueue = false;
 
