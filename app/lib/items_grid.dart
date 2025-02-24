@@ -296,7 +296,7 @@ class _ItemsGridState extends State<ItemsGrid> {
           ),
           const SizedBox(height: 16.0),
           Text(
-            'No playlists added yet!',
+            'Your mix is empty!',
             style: TextStyle(
               fontSize: 18.0,
               color: theme.colorScheme.onSurfaceVariant,
@@ -326,7 +326,7 @@ class _ItemsGridState extends State<ItemsGrid> {
               ),
             ),
             child: const Text(
-              'Add a Playlist',
+              'Add something to your mix',
               style: TextStyle(fontSize: 16.0),
             ),
           ),
