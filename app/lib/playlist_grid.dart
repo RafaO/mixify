@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mixafy/api_service.dart';
 import 'package:mixafy/entities/mix.dart';
-import 'package:mixafy/entities/spotify_playlist.dart';
 import 'package:mixafy/entities/time_range.dart';
 import 'package:mixafy/mix_list_screen.dart';
 import 'package:mixafy/playlist_card.dart';
@@ -198,8 +197,7 @@ class _PlaylistGridState extends State<PlaylistGrid> {
             : Text(
                 "Play on Spotify",
                 style: TextStyle(
-                  color:
-                      items.isEmpty ? Colors.grey.shade700 : Colors.black,
+                  color: items.isEmpty ? Colors.grey.shade700 : Colors.black,
                 ),
               ),
       ),
