@@ -1,4 +1,4 @@
-import 'package:mixafy/playlist_selector.dart';
+import 'package:mixafy/items_selector.dart';
 
 class SpotifyPlaylist implements SelectableItem {
   final String id;

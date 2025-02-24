@@ -1,6 +1,6 @@
 import 'package:mixafy/database_helper.dart';
 import 'package:mixafy/entities/time_range.dart';
-import 'package:mixafy/playlist_selector.dart';
+import 'package:mixafy/items_selector.dart';
 
 class Mix {
   final String mixName;

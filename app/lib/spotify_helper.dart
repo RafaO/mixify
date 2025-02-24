@@ -5,7 +5,7 @@ import 'package:mixafy/entities/artist.dart';
 import 'package:mixafy/entities/spotify_playlist.dart';
 import 'package:mixafy/entities/spotify_song.dart';
 import 'package:mixafy/entities/time_range.dart';
-import 'package:mixafy/playlist_selector.dart';
+import 'package:mixafy/items_selector.dart';
 
 class Result<T> {
   final T? data;
