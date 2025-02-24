@@ -121,6 +121,12 @@ class _SelectableListState<T extends SelectableItem>
     _fetchItems();
   }
 
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> _fetchItems() async {
     final fetchedItems = await widget.fetchItems();
     setState(() {
