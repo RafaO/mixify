@@ -10,16 +10,16 @@ import 'package:mixafy/spotify_helper.dart';
 import 'package:mixafy/theme.dart';
 import 'package:mixafy/utils.dart';
 
-class PlaylistGrid extends StatefulWidget {
+class ItemsGrid extends StatefulWidget {
   final APIService apiService;
 
-  const PlaylistGrid({Key? key, required this.apiService}) : super(key: key);
+  const ItemsGrid({Key? key, required this.apiService}) : super(key: key);
 
   @override
-  State<PlaylistGrid> createState() => _PlaylistGridState();
+  State<ItemsGrid> createState() => _ItemsGridState();
 }
 
-class _PlaylistGridState extends State<PlaylistGrid> {
+class _ItemsGridState extends State<ItemsGrid> {
   List<SelectableItem> items = [];
   bool isLoading = false;
   TimeRange selectedTimeRange = TimeRange.oneMonth();

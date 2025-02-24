@@ -169,7 +169,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return authenticated
-        ? PlaylistGrid(apiService: _apiService)
+        ? ItemsGrid(apiService: _apiService)
         : AuthView(onButtonPressed: authenticateWithSpotify);
   }
 }
