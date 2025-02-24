@@ -176,6 +176,9 @@ class APIService {
     List<String> playlistIds,
     TimeRange timeRange,
   ) async {
+    if (playlistIds.isEmpty) {
+      return [];
+    }
     List<List<SpotifySong>> songsLists = [];
 
     for (String playlistId in playlistIds) {
