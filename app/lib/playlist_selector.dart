@@ -55,7 +55,7 @@ class _PlaylistSelectorState extends State<PlaylistSelector> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Select Items'),
+          title: const Text('Add things to your mix'),
           actions: [
             IconButton(
               icon: const Icon(Icons.check),
