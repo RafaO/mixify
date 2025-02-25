@@ -46,7 +46,16 @@ class _ItemsSelectorState extends State<ItemsSelector> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Add things to your mix'),
+          title: Row(
+            children: [
+              Image.asset(
+                'assets/Spotify_Primary_Logo_RGB_Green.png',
+                height: 30,
+              ),
+              const SizedBox(width: 10),
+              const Text('Add things to your mix'),
+            ],
+          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.check),
