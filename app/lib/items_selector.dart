@@ -22,6 +22,7 @@ class ItemsSelector extends StatefulWidget {
 
 class _ItemsSelectorState extends State<ItemsSelector> {
   late List<SelectableItem> selectedItems;
+  final bool includeSavedTracksFeatureFlag = false;
 
   @override
   void initState() {
@@ -77,11 +78,13 @@ class _ItemsSelectorState extends State<ItemsSelector> {
               fetchItems: widget.apiService.fetchPlaylists,
               selectedItems: selectedItems,
               onToggleSelection: _toggleSelection,
+              includeSavedTracksFeatureFlag: includeSavedTracksFeatureFlag,
             ),
             SelectableList<Artist>(
               fetchItems: widget.apiService.getUserSavedArtists,
               selectedItems: selectedItems,
               onToggleSelection: _toggleSelection,
+              includeSavedTracksFeatureFlag: includeSavedTracksFeatureFlag,
             ),
           ],
         ),
@@ -94,12 +97,14 @@ class SelectableList<T extends SelectableItem> extends StatefulWidget {
   final Future<List<T>> Function() fetchItems;
   final List<SelectableItem> selectedItems;
   final Function(SelectableItem) onToggleSelection;
+  final bool includeSavedTracksFeatureFlag;
 
   const SelectableList({
     Key? key,
     required this.fetchItems,
     required this.selectedItems,
     required this.onToggleSelection,
+    required this.includeSavedTracksFeatureFlag,
   }) : super(key: key);
 
   @override
@@ -153,7 +158,6 @@ class _SelectableListState<T extends SelectableItem>
           padding: const EdgeInsets.all(8.0),
           child: TextField(
             controller: searchController,
-            onChanged: _filterItems,
             decoration: InputDecoration(
               labelText: 'Search',
               prefixIcon: const Icon(Icons.search),
@@ -176,9 +180,24 @@ class _SelectableListState<T extends SelectableItem>
           child: isLoading
               ? const Center(child: CircularProgressIndicator())
               : ListView.builder(
-                  itemCount: filteredItems.length,
+                  itemCount: filteredItems.length +
+                      (widget.includeSavedTracksFeatureFlag ? 1 : 0),
                   itemBuilder: (context, index) {
-                    final item = filteredItems[index];
+                    if (widget.includeSavedTracksFeatureFlag && index == 0) {
+                      return ListTile(
+                        leading:
+                            const Icon(Icons.favorite, color: Colors.green),
+                        title: const Text('Include your saved tracks'),
+                        trailing: const Icon(Icons.circle_outlined),
+                        onTap: () {
+                          // Handle the selection of saved tracks
+                        },
+                      );
+                    }
+                    final item = filteredItems[
+                        widget.includeSavedTracksFeatureFlag
+                            ? index - 1
+                            : index];
                     final isSelected = widget.selectedItems.contains(item);
                     return ListTile(
                       leading: item.imageUrl != null
