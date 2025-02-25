@@ -118,9 +118,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       return;
     }
     const redirectUri = 'mixafy://callback';
-    // user-library-read is not working for some reason
+    // user-follow-read, user-library-read are pending to be approved
     const scope =
-        "playlist-read-private, user-modify-playback-state, user-read-playback-state, user-read-currently-playing, user-follow-read";
+        "playlist-read-private, user-modify-playback-state, user-read-playback-state, user-read-currently-playing";
     try {
       // If installed, use Spotify SDK authentication
       var accessToken = await SpotifySdk.getAccessToken(
