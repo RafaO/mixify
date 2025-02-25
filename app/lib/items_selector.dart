@@ -23,6 +23,7 @@ class ItemsSelector extends StatefulWidget {
 class _ItemsSelectorState extends State<ItemsSelector> {
   late List<SelectableItem> selectedItems;
   final bool includeSavedTracksFeatureFlag = false;
+  final bool showTabsFeatureFlag = false;
 
   @override
   void initState() {
@@ -44,7 +45,7 @@ class _ItemsSelectorState extends State<ItemsSelector> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: showTabsFeatureFlag ? 2 : 1,
       child: Scaffold(
         appBar: AppBar(
           title: Row(
@@ -65,29 +66,40 @@ class _ItemsSelectorState extends State<ItemsSelector> {
               },
             ),
           ],
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Playlists'),
-              Tab(text: 'Artists'),
-            ],
-          ),
+          bottom: showTabsFeatureFlag
+              ? const TabBar(
+                  tabs: [
+                    Tab(text: 'Playlists'),
+                    Tab(text: 'Artists'),
+                  ],
+                )
+              : null,
         ),
-        body: TabBarView(
-          children: [
-            SelectableList<SpotifyPlaylist>(
-              fetchItems: widget.apiService.fetchPlaylists,
-              selectedItems: selectedItems,
-              onToggleSelection: _toggleSelection,
-              includeSavedTracksFeatureFlag: includeSavedTracksFeatureFlag,
-            ),
-            SelectableList<Artist>(
-              fetchItems: widget.apiService.getUserSavedArtists,
-              selectedItems: selectedItems,
-              onToggleSelection: _toggleSelection,
-              includeSavedTracksFeatureFlag: includeSavedTracksFeatureFlag,
-            ),
-          ],
-        ),
+        body: showTabsFeatureFlag
+            ? TabBarView(
+                children: [
+                  SelectableList<SpotifyPlaylist>(
+                    fetchItems: widget.apiService.fetchPlaylists,
+                    selectedItems: selectedItems,
+                    onToggleSelection: _toggleSelection,
+                    includeSavedTracksFeatureFlag:
+                        includeSavedTracksFeatureFlag,
+                  ),
+                  SelectableList<Artist>(
+                    fetchItems: widget.apiService.getUserSavedArtists,
+                    selectedItems: selectedItems,
+                    onToggleSelection: _toggleSelection,
+                    includeSavedTracksFeatureFlag:
+                        includeSavedTracksFeatureFlag,
+                  ),
+                ],
+              )
+            : SelectableList<SpotifyPlaylist>(
+                fetchItems: widget.apiService.fetchPlaylists,
+                selectedItems: selectedItems,
+                onToggleSelection: _toggleSelection,
+                includeSavedTracksFeatureFlag: includeSavedTracksFeatureFlag,
+              ),
       ),
     );
   }
