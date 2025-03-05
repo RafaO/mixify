@@ -170,6 +170,7 @@ class _SelectableListState<T extends SelectableItem>
           padding: const EdgeInsets.all(8.0),
           child: TextField(
             controller: searchController,
+            onChanged: _filterItems,
             decoration: InputDecoration(
               labelText: 'Search',
               prefixIcon: const Icon(Icons.search),
