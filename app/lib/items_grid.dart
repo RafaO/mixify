@@ -5,7 +5,7 @@ import 'package:mixafy/entities/selectable_item.dart';
 import 'package:mixafy/entities/time_range.dart';
 import 'package:mixafy/items_selector.dart';
 import 'package:mixafy/mix_list_screen.dart';
-import 'package:mixafy/playlist_card.dart';
+import 'package:mixafy/item_card.dart';
 import 'package:mixafy/save_mix.dart';
 import 'package:mixafy/spotify_helper.dart';
 import 'package:mixafy/theme.dart';
