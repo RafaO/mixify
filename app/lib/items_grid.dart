@@ -115,8 +115,8 @@ class _ItemsGridState extends State<ItemsGrid> {
                             itemBuilder: (context, index) {
                               if (index < items.length) {
                                 final playlist = items[index];
-                                return PlaylistCard(
-                                  playlist: playlist,
+                                return ItemCard(
+                                  item: playlist,
                                   onRemove: (playlistToRemove) {
                                     setState(() {
                                       items.remove(playlistToRemove);

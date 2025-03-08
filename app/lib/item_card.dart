@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:mixafy/entities/selectable_item.dart';
 
-class PlaylistCard extends StatelessWidget {
-  final SelectableItem playlist;
+class ItemCard extends StatefulWidget {
+  final SelectableItem item;
   final Function(dynamic) onRemove;
 
-  const PlaylistCard({
+  const ItemCard({
     super.key,
-    required this.playlist,
+    required this.item,
     required this.onRemove,
   });
+
+  @override
+  ItemCardState createState() => ItemCardState();
+}
+
+class ItemCardState extends State<ItemCard> {
+  bool featureFlagPercentage = false;
+  double percentage = 50.0; // Default percentage
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +25,9 @@ class PlaylistCard extends StatelessWidget {
       elevation: 4.0,
       child: Stack(
         children: [
-          if (playlist.imageUrl != null)
+          if (widget.item.imageUrl != null)
             Image.network(
-              playlist.imageUrl!,
+              widget.item.imageUrl!,
               fit: BoxFit.cover,
               width: double.infinity,
             ),
@@ -55,9 +63,7 @@ class PlaylistCard extends StatelessWidget {
                 Icons.delete,
                 color: Colors.white,
               ),
-              onPressed: () {
-                onRemove(playlist); // Call the function to remove the playlist
-              },
+              onPressed: () => widget.onRemove(widget.item),
             ),
           ),
           Positioned(
@@ -66,7 +72,7 @@ class PlaylistCard extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                playlist.name,
+                widget.item.name,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -75,8 +81,74 @@ class PlaylistCard extends StatelessWidget {
               ),
             ),
           ),
+          featureFlagPercentage
+              ? Positioned(
+                  top: 8,
+                  left: 8,
+                  child: IconButton(
+                    icon: const Icon(Icons.settings),
+                    onPressed: () {
+                      _showSettingsDialog(context);
+                    },
+                  ),
+                )
+              : SizedBox(),
         ],
       ),
+    );
+  }
+
+  void _showSettingsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        double tempPercentage =
+            percentage; // Temporary variable to hold the slider value
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Set Percentage'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Slider(
+                    value: tempPercentage,
+                    min: 0,
+                    max: 100,
+                    divisions: 100,
+                    label: '${tempPercentage.round()}%',
+                    onChanged: (value) {
+                      setState(() {
+                        tempPercentage = value;
+                      });
+                    },
+                  ),
+                  Text('${tempPercentage.round()}%'),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      percentage =
+                          tempPercentage; // Update the main state with the new value
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }
