@@ -8,6 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mixafy/api_service.dart';
 import 'package:mixafy/auth_view.dart';
 import 'package:mixafy/items_grid.dart';
+import 'package:mixafy/songs_mixer.dart';
 import 'package:mixafy/theme.dart';
 import 'package:mixafy/token_manager.dart';
 import 'package:mixafy/utils.dart';
@@ -79,6 +80,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         });
       },
       tokenManager: widget._tokenManager,
+      songsMixer: SongsMixer(),
     );
     widget._tokenManager.isTokenValid().then((valid) {
       if (valid) {

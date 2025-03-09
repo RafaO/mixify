@@ -5,7 +5,7 @@ import 'package:mixafy/entities/selectable_item.dart';
 import 'package:mixafy/entities/time_range.dart';
 import 'package:mixafy/items_selector.dart';
 import 'package:mixafy/mix_list_screen.dart';
-import 'package:mixafy/playlist_card.dart';
+import 'package:mixafy/item_card.dart';
 import 'package:mixafy/save_mix.dart';
 import 'package:mixafy/spotify_helper.dart';
 import 'package:mixafy/theme.dart';
@@ -61,7 +61,8 @@ class _ItemsGridState extends State<ItemsGrid> {
                       mixes: savedMixes,
                       onMixSelected: (Mix mix) {
                         setState(() {
-                          items = mix.playlists;
+                          items.clear();
+                          items.addAll(mix.playlists);
                           selectedTimeRange = mix.timeRange;
                         });
                       },
@@ -115,8 +116,8 @@ class _ItemsGridState extends State<ItemsGrid> {
                             itemBuilder: (context, index) {
                               if (index < items.length) {
                                 final playlist = items[index];
-                                return PlaylistCard(
-                                  playlist: playlist,
+                                return ItemCard(
+                                  item: playlist,
                                   onRemove: (playlistToRemove) {
                                     setState(() {
                                       items.remove(playlistToRemove);

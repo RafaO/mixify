@@ -1,30 +1,33 @@
-import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mixafy/entities/artist.dart';
 import 'package:mixafy/entities/spotify_playlist.dart';
 import 'package:mixafy/entities/spotify_song.dart';
 import 'package:mixafy/entities/time_range.dart';
+import 'package:mixafy/songs_mixer.dart';
 import 'package:mixafy/token_manager.dart';
+
+import 'entities/playlist_songs.dart';
 
 class APIService {
   static const String baseUrl = 'https://api.spotify.com';
   final TokenManager tokenManager;
   final VoidCallback onUnauthorised;
+  final SongsMixer songsMixer;
 
   late final Dio _dio;
 
   APIService({
     required this.onUnauthorised,
     required this.tokenManager,
+    required this.songsMixer,
   }) {
     _dio = Dio(BaseOptions(baseUrl: baseUrl));
 
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
         debugPrint(
-            "calling ${options.uri} with token ${tokenManager.spotifyToken}");
+            "Calling ${options.uri} with token ${tokenManager.spotifyToken}");
         if (options.baseUrl == baseUrl) {
           options.headers['Authorization'] =
               'Bearer ${tokenManager.spotifyToken}';
@@ -89,132 +92,77 @@ class APIService {
 
     if (response.statusCode == 200) {
       List<dynamic> items = response.data['items'];
-      List<SpotifyPlaylist> playlists = [];
-
-      for (var item in items) {
-        playlists.add(SpotifyPlaylist(
-            id: item['id'],
-            name: item['name'],
-            description: item['description'],
-            imageUrl: item['images']?[0]['url']));
-        // != null && playlist['images'].isNotEmpty ?
-        //     if ()
-        //   Image.network(
-        //   playlist['images'][0]['url'],
-        //   fit: BoxFit.cover,
-        //   width: double.infinity,
-        // ),
-        // ));
-      }
-
-      return playlists;
+      return items
+          .map((item) => SpotifyPlaylist(
+                id: item['id'],
+                name: item['name'],
+                description: item['description'],
+                imageUrl: item['images']?[0]['url'],
+              ))
+          .toList();
     } else {
       debugPrint('Failed to load playlists: ${response.statusCode}');
-      return List.empty();
+      return [];
     }
-  }
-
-  Future<String> getActiveDevice() async {
-    final response = await _dio.get('/v1/me/player/devices');
-
-    String deviceId = '';
-    if (response.data['devices'] != null &&
-        response.data['devices'].length > 0) {
-      // get the first one that is active
-      deviceId = response.data['devices'].first['id'];
-
-      final activeDevice = response.data['devices'].firstWhere(
-          (device) => device['is_active'] == true,
-          orElse: () => null);
-      if (activeDevice != null) {
-        deviceId = activeDevice['id'];
-      }
-    } else {
-      return '';
-    }
-    return deviceId;
-  }
-
-  List<SpotifySong> mixAndAppendMultipleListsRecursive(
-      List<List<SpotifySong>> lists) {
-    List<SpotifySong> result = [];
-
-    // Find the size of the shortest list
-    int minLength = lists.map((list) => list.length).reduce(min);
-
-    // Combine elements randomly up to the size of the shortest list
-    List<int> indices =
-        List.generate(minLength * lists.length, (index) => index);
-    indices.shuffle();
-
-    for (int i = 0; i < minLength * lists.length; i++) {
-      int listIndex = indices[i] % lists.length;
-      int elementIndex = indices[i] ~/ lists.length;
-      result.add(lists[listIndex][elementIndex]);
-    }
-
-    // Create a list of remaining lists
-    List<List<SpotifySong>> remainingLists = [];
-    for (int j = 0; j < lists.length; j++) {
-      if (lists[j].length > minLength) {
-        remainingLists.add(lists[j].sublist(minLength));
-      }
-    }
-
-    // Recursively mix and append the remaining lists
-    if (remainingLists.length > 1) {
-      result.addAll(mixAndAppendMultipleListsRecursive(remainingLists));
-    } else if (remainingLists.length == 1) {
-      // If there's only one list left, append its elements
-      result.addAll(remainingLists[0]);
-    }
-
-    return result;
   }
 
   Future<List<SpotifySong>> fetchAndMixAllSongsFromPlaylists(
-    List<String> playlistIds,
-    TimeRange timeRange,
-  ) async {
-    if (playlistIds.isEmpty) {
+      Map<String, double> playlistPercentages, TimeRange timeRange) async {
+    if (playlistPercentages.isEmpty) {
       return [];
     }
-    List<List<SpotifySong>> songsLists = [];
 
-    for (String playlistId in playlistIds) {
-      final playlistSongs = await _fetchSongsFromPlaylist(
-        playlistId,
-        timeRange,
-      );
-      songsLists.add(playlistSongs);
+    Map<String, List<SpotifySong>> songsByPlaylist = {};
+    Map<String, List<SpotifySong>> fallbackSongsByPlaylist = {};
+
+    // Fetch songs from playlists and add them to songsByPlaylist and fallbackSongsByPlaylist
+    for (String playlistId in playlistPercentages.keys) {
+      final playlistSongs =
+          await _fetchSongsFromPlaylist(playlistId, timeRange);
+      songsByPlaylist[playlistId] = playlistSongs.playlistSongs;
+      fallbackSongsByPlaylist[playlistId] = playlistSongs.fallbackSongs;
     }
 
-    final result = mixAndAppendMultipleListsRecursive(songsLists);
-
-    return result;
+    // Use SongsMixer to mix the songs based on the percentages
+    return songsMixer.mix(
+        songsByPlaylist, playlistPercentages, fallbackSongsByPlaylist);
   }
 
-  Future<List<SpotifySong>> _fetchSongsFromPlaylist(
-    String playlistId,
-    TimeRange timeRange,
-  ) async =>
-      _fetchSongs('/v1/playlists/$playlistId/tracks', timeRange);
+  Future<String> getActiveDevice() async {
+    try {
+      final response = await _dio.get('/v1/me/player/devices');
+      if (response.statusCode == 200) {
+        List<dynamic> devices = response.data['devices'];
+        final activeDevice = devices.firstWhere(
+          (device) => device['is_active'] == true,
+          orElse: () => null,
+        );
+        return activeDevice?['id'] ?? '';
+      }
+    } catch (e) {
+      debugPrint("Error fetching active device: ${e.toString()}");
+    }
+    return '';
+  }
 
-  Future<List<SpotifySong>> _fetchSavedTracks(TimeRange timeRange) async =>
-      _fetchSongs('/v1/me/tracks', timeRange);
+  Future<PlaylistSongs> _fetchSongsFromPlaylist(
+      String playlistId, TimeRange timeRange) async {
+    return _fetchSongs('/v1/playlists/$playlistId/tracks', timeRange);
+  }
 
-  Future<List<SpotifySong>> _fetchSongs(
-    String url,
-    TimeRange timeRange,
-  ) async {
+  Future<PlaylistSongs> _fetchSavedTracks(TimeRange timeRange) async {
+    return _fetchSongs('/v1/me/tracks', timeRange);
+  }
+
+  Future<PlaylistSongs> _fetchSongs(String url, TimeRange timeRange) async {
     List<SpotifySong> playlistSongs = [];
+    List<SpotifySong> fallbackSongs = [];
     int offset = 0;
-    const int limit = 100; // Spotify's max limit per page
+    const int limit = 100;
 
     final DateTime filterStartDate = timeRange.getStartDate();
 
     while (true) {
-      // Construct the request URL with pagination parameters
       final response = await _dio.get(
         url,
         queryParameters: {
@@ -224,8 +172,7 @@ class APIService {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> data = response.data;
-        final List<dynamic> items = data['items'];
+        final List<dynamic> items = response.data['items'];
 
         for (var item in items) {
           final track = item['track'];
@@ -236,34 +183,43 @@ class APIService {
           final spotifySong = SpotifySong(
             track['uri'],
             name: songName,
+            addedAt: dateTime,
           );
 
-          // Filter by the time range
           if (dateTime.isAfter(filterStartDate)) {
             playlistSongs.add(spotifySong);
+          } else {
+            fallbackSongs.add(spotifySong);
           }
         }
 
-        // Check if there are more pages
         if (items.length < limit) {
-          break; // No more pages
+          break;
         }
-        offset += limit; // Move to the next page
+        offset += limit;
       } else {
         throw Exception(
             'Failed to load playlist songs: ${response.statusCode}');
       }
     }
 
-    return playlistSongs;
+    fallbackSongs.sort((a, b) {
+      if (a.addedAt == null || b.addedAt == null) {
+        return 0;
+      }
+      return a.addedAt!.isBefore(b.addedAt!) ? 1 : -1;
+    });
+    return PlaylistSongs(
+      playlistSongs: playlistSongs,
+      fallbackSongs: fallbackSongs,
+    );
   }
 
   Future<List<Artist>> getUserSavedArtists() async {
     final response = await _dio.get('/v1/me/following?type=artist');
     if (response.statusCode == 200) {
-      List<dynamic> items = response.data['artists']['items'];
-      return items
-          .map((artist) => Artist(
+      return response.data['artists']['items']
+          .map<Artist>((artist) => Artist(
                 artist['id'],
                 name: artist['name'],
                 imageUrl: artist['images']?[0]['url'],
@@ -276,9 +232,9 @@ class APIService {
   Future<List<SpotifySong>> getPopularTracks(String artistId) async {
     final response = await _dio.get('/v1/artists/$artistId/top-tracks');
     if (response.statusCode == 200) {
-      List<dynamic> tracks = response.data['tracks'];
-      return tracks
-          .map((track) => SpotifySong(track['uri'], name: track['name']))
+      return response.data['tracks']
+          .map<SpotifySong>(
+              (track) => SpotifySong(track['uri'], name: track['name']))
           .toList();
     }
     return [];

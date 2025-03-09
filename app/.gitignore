@@ -35,4 +35,4 @@ doc/api/
 
 **/.DS_Store
 
-app/android/app/.cxx/
+**/android/app/.cxx/
