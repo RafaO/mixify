@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:mixafy/api_service.dart';
 import 'package:mixafy/entities/artist.dart';
 import 'package:mixafy/entities/selectable_item.dart';
-import 'package:mixafy/entities/spotify_playlist.dart';
 import 'package:mixafy/entities/spotify_song.dart';
 import 'package:mixafy/entities/time_range.dart';
 
@@ -37,15 +36,18 @@ class SpotifyHelper {
           "Please start your Spotify app on any device and try again.");
     }
 
-    // Step 2: Fetch and mix songs from playlists
+    Map<String, double> playlistPercentages = {};
+
+    for (var item in items) {
+      playlistPercentages[item.id] = 1.0 / items.length;
+    }
+
     final listOfSongs = await _apiService.fetchAndMixAllSongsFromPlaylists(
-      items
-          .whereType<SpotifyPlaylist>()
-          .map((playlist) => playlist.id)
-          .toList(),
+      playlistPercentages,
       timeRange,
     );
 
+    // TODO the percentage should affect also the artists
     for (var artist in items.whereType<Artist>()) {
       final result = await getPopularTracksFromArtist(artist.id);
       if (result.isSuccess && result.data != null) {
