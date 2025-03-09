@@ -10,11 +10,11 @@ class ItemsSelector extends StatefulWidget {
   final List<SelectableItem> alreadySelectedItems;
 
   const ItemsSelector({
-    Key? key,
+    super.key,
     required this.apiService,
     required this.onSelectionChanged,
     required this.alreadySelectedItems,
-  }) : super(key: key);
+  });
 
   @override
   State<ItemsSelector> createState() => _ItemsSelectorState();
@@ -78,14 +78,14 @@ class _ItemsSelectorState extends State<ItemsSelector> {
         body: showTabsFeatureFlag
             ? TabBarView(
                 children: [
-                  SelectableList<SpotifyPlaylist>(
+                  SelectableList<SelectableItem>(
                     fetchItems: widget.apiService.fetchPlaylists,
                     selectedItems: selectedItems,
                     onToggleSelection: _toggleSelection,
                     includeSavedTracksFeatureFlag:
                         includeSavedTracksFeatureFlag,
                   ),
-                  SelectableList<Artist>(
+                  SelectableList<SelectableItem>(
                     fetchItems: widget.apiService.getUserSavedArtists,
                     selectedItems: selectedItems,
                     onToggleSelection: _toggleSelection,
@@ -94,7 +94,7 @@ class _ItemsSelectorState extends State<ItemsSelector> {
                   ),
                 ],
               )
-            : SelectableList<SpotifyPlaylist>(
+            : SelectableList<SelectableItem>(
                 fetchItems: widget.apiService.fetchPlaylists,
                 selectedItems: selectedItems,
                 onToggleSelection: _toggleSelection,
