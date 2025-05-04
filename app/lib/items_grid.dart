@@ -3,9 +3,9 @@ import 'package:mixafy/api_service.dart';
 import 'package:mixafy/entities/mix.dart';
 import 'package:mixafy/entities/selectable_item.dart';
 import 'package:mixafy/entities/time_range.dart';
+import 'package:mixafy/item_card.dart';
 import 'package:mixafy/items_selector.dart';
 import 'package:mixafy/mix_list_screen.dart';
-import 'package:mixafy/item_card.dart';
 import 'package:mixafy/save_mix.dart';
 import 'package:mixafy/spotify_helper.dart';
 import 'package:mixafy/theme.dart';
@@ -109,19 +109,34 @@ class _ItemsGridState extends State<ItemsGrid> {
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
-                              crossAxisSpacing: 16.0,
-                              mainAxisSpacing: 16.0,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                              childAspectRatio:
+                                  0.65, // Adjusted for taller cards
                             ),
                             itemCount: items.length + 1,
                             itemBuilder: (context, index) {
                               if (index < items.length) {
                                 final playlist = items[index];
-                                return ItemCard(
-                                  item: playlist,
-                                  onRemove: (playlistToRemove) {
-                                    setState(() {
-                                      items.remove(playlistToRemove);
-                                    });
+                                return LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    return FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxWidth: constraints.maxWidth,
+                                          maxHeight: constraints.maxHeight,
+                                        ),
+                                        child: ItemCard(
+                                          item: playlist,
+                                          onRemove: (playlistToRemove) {
+                                            setState(() {
+                                              items.remove(playlistToRemove);
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    );
                                   },
                                 );
                               } else {

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mixafy/entities/selectable_item.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class ItemCard extends StatefulWidget {
+class ItemCard extends StatelessWidget {
   final SelectableItem item;
-  final Function(dynamic) onRemove;
+  final Function(SelectableItem) onRemove;
 
   const ItemCard({
     super.key,
@@ -12,143 +13,64 @@ class ItemCard extends StatefulWidget {
   });
 
   @override
-  ItemCardState createState() => ItemCardState();
-}
-
-class ItemCardState extends State<ItemCard> {
-  bool featureFlagPercentage = false;
-  double percentage = 50.0; // Default percentage
-
-  @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4.0,
-      child: Stack(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          if (widget.item.imageUrl != null)
-            Image.network(
-              widget.item.imageUrl!,
-              fit: BoxFit.cover,
-              width: double.infinity,
-            ),
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.transparent,
-                  Colors.black.withOpacity(0.7),
-                ],
-              ),
+          AspectRatio(
+            aspectRatio: 1,
+            child: Image.network(
+              item.imageUrl!,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) =>
+                  const Icon(Icons.broken_image, size: 48),
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.center,
-                end: Alignment.topRight,
-                colors: [
-                  Colors.transparent,
-                  Colors.black.withOpacity(0.7),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            top: 5,
-            right: 5,
-            child: IconButton(
-              icon: const Icon(
-                Icons.delete,
-                color: Colors.white,
-              ),
-              onPressed: () => widget.onRemove(widget.item),
-            ),
-          ),
-          Positioned(
-            bottom: 10,
-            right: 10,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                widget.item.name,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontSize: 16,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Expanded(
+                  child: Text(
+                    item.name,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
                 ),
               ),
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () => onRemove(item),
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+              ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: () async {
+                final url = Uri.parse(item.spotifyUrl ?? "");
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                }
+              },
+              icon: Image.asset(
+                'assets/Spotify_Icon_CMYK_Black.png',
+                width: 24.0,
+                height: 24.0,
+                color: Colors.green,
+              ),
+              label: const Text("View in Spotify"),
             ),
           ),
-          featureFlagPercentage
-              ? Positioned(
-                  top: 8,
-                  left: 8,
-                  child: IconButton(
-                    icon: const Icon(Icons.settings),
-                    onPressed: () {
-                      _showSettingsDialog(context);
-                    },
-                  ),
-                )
-              : SizedBox(),
         ],
       ),
-    );
-  }
-
-  void _showSettingsDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        double tempPercentage =
-            percentage; // Temporary variable to hold the slider value
-
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Set Percentage'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Slider(
-                    value: tempPercentage,
-                    min: 0,
-                    max: 100,
-                    divisions: 100,
-                    label: '${tempPercentage.round()}%',
-                    onChanged: (value) {
-                      setState(() {
-                        tempPercentage = value;
-                      });
-                    },
-                  ),
-                  Text('${tempPercentage.round()}%'),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      percentage =
-                          tempPercentage; // Update the main state with the new value
-                    });
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Save'),
-                ),
-              ],
-            );
-          },
-        );
-      },
     );
   }
 }

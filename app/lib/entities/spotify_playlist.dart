@@ -9,12 +9,15 @@ class SpotifyPlaylist implements SelectableItem {
   final String? description;
   @override
   final String? imageUrl;
+  @override
+  final String? spotifyUrl;
 
   SpotifyPlaylist({
     required this.id,
     required this.name,
     required this.description,
     required this.imageUrl,
+    required this.spotifyUrl,
   });
 
   @override
@@ -42,6 +45,7 @@ class SpotifyPlaylist implements SelectableItem {
       name: json['name'],
       description: json['description'],
       imageUrl: json['imageUrl'],
+      spotifyUrl: json['spotifyUrl'],
     );
   }
 }

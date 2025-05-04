@@ -98,6 +98,7 @@ class APIService {
                 name: item['name'],
                 description: item['description'],
                 imageUrl: item['images']?[0]['url'],
+                spotifyUrl: item['external_urls']['spotify'],
               ))
           .toList();
     } else {
@@ -223,6 +224,7 @@ class APIService {
                 artist['id'],
                 name: artist['name'],
                 imageUrl: artist['images']?[0]['url'],
+                spotifyUrl: artist['external_urls']['spotify'],
               ))
           .toList();
     }
