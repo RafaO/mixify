@@ -53,7 +53,7 @@ class _ItemsSelectorState extends State<ItemsSelector> {
                 height: 30,
               ),
               const SizedBox(width: 10),
-              const Text('Add things to your mix'),
+              const Text('Add to your mix'),
             ],
           ),
           actions: [
