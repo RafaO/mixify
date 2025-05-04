@@ -14,7 +14,7 @@ import 'package:mixafy/utils.dart';
 class ItemsGrid extends StatefulWidget {
   final APIService apiService;
 
-  const ItemsGrid({Key? key, required this.apiService}) : super(key: key);
+  const ItemsGrid({super.key, required this.apiService});
 
   @override
   State<ItemsGrid> createState() => _ItemsGridState();
