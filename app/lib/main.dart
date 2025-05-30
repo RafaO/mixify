@@ -22,20 +22,22 @@ Future main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-  PlatformDispatcher.instance.onError = (error, stack) {
-    if (kDebugMode) {
-      developer.log(
-        'general error:',
-        name: 'com.keller.mixafy',
-        error: error,
-      );
-    } else {
+
+  if (kReleaseMode) {
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    PlatformDispatcher.instance.onError = (error, stack) {
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    }
-    return true;
-  };
+      return true;
+    };
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+  } else {
+    // In debug/dev, print errors to console
+    FlutterError.onError = FlutterError.dumpErrorToConsole;
+    PlatformDispatcher.instance.onError = (error, stack) {
+      debugPrint('Error: $error\n$stack');
+      return true;
+    };
+  }
   runApp(const MyApp());
 }
 
