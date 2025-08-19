@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mixafy/api_service.dart';
-import 'package:mixafy/entities/artist.dart';
 import 'package:mixafy/entities/selectable_item.dart';
 import 'package:mixafy/entities/spotify_song.dart';
 import 'package:mixafy/entities/time_range.dart';
@@ -38,22 +37,16 @@ class SpotifyHelper {
 
     Map<String, double> playlistPercentages = {};
 
+    final double percentagePerItem = 1.0 / items.length;
     for (var item in items) {
-      playlistPercentages[item.id] = 1.0 / items.length;
+      playlistPercentages[item.id] = percentagePerItem;
     }
 
-    final listOfSongs = await _apiService.fetchAndMixAllSongsFromPlaylists(
+    final listOfSongs = await _apiService.fetchAndMixAllSongsFromItems(
+      items,
       playlistPercentages,
       timeRange,
     );
-
-    // TODO the percentage should affect also the artists
-    for (var artist in items.whereType<Artist>()) {
-      final result = await getPopularTracksFromArtist(artist.id);
-      if (result.isSuccess && result.data != null) {
-        listOfSongs.addAll(result.data!);
-      }
-    }
 
     if (listOfSongs.isEmpty) {
       debugPrint("No songs found in the playlists.");
@@ -108,16 +101,6 @@ class SpotifyHelper {
     }
     debugPrint("Mix successfully played.");
     return Result.success();
-  }
-
-  /// Fetches the user's saved artists
-  Future<Result<List<Artist>>> getUserSavedArtists() async {
-    try {
-      final response = await _apiService.getUserSavedArtists();
-      return Result.success(data: response);
-    } catch (e) {
-      return Result.failure("Failed to fetch saved artists: \${e.toString()}");
-    }
   }
 
   /// Fetches the popular tracks of a given artist

@@ -122,9 +122,14 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       return;
     }
     const redirectUri = 'mixafy://callback';
-    // user-follow-read, user-library-read are pending to be approved
-    const scope =
-        "playlist-read-private, user-modify-playback-state, user-read-playback-state, user-read-currently-playing";
+    const String scope = "playlist-read-private,"
+        "user-modify-playback-state,"
+        "user-read-playback-state,"
+        "user-read-currently-playing,"
+        "user-follow-read,"
+        "user-library-read,"
+        // "app-remote-control," // this doesn't work on Android at least
+    ;
     try {
       // If installed, use Spotify SDK authentication
       var accessToken = await SpotifySdk.getAccessToken(
