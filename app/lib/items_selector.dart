@@ -21,7 +21,7 @@ class ItemsSelector extends StatefulWidget {
 class _ItemsSelectorState extends State<ItemsSelector> {
   late List<SelectableItem> selectedItems;
   final bool includeSavedTracksFeatureFlag = false;
-  final bool showTabsFeatureFlag = false;
+  final bool showTabsFeatureFlag = true;
 
   @override
   void initState() {
