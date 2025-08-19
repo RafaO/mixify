@@ -8,6 +8,7 @@ import 'package:mixafy/songs_mixer.dart';
 import 'package:mixafy/token_manager.dart';
 
 import 'entities/playlist_songs.dart';
+import 'entities/selectable_item.dart';
 
 class APIService {
   static const String baseUrl = 'https://api.spotify.com';
@@ -98,6 +99,7 @@ class APIService {
                 name: item['name'],
                 description: item['description'],
                 imageUrl: item['images']?[0]['url'],
+                spotifyUrl: item['external_urls']['spotify'],
               ))
           .toList();
     } else {
@@ -106,26 +108,35 @@ class APIService {
     }
   }
 
-  Future<List<SpotifySong>> fetchAndMixAllSongsFromPlaylists(
-      Map<String, double> playlistPercentages, TimeRange timeRange) async {
-    if (playlistPercentages.isEmpty) {
+  Future<List<SpotifySong>> fetchAndMixAllSongsFromItems(
+    List<SelectableItem> items,
+    Map<String, double> itemsPercentage,
+    TimeRange timeRange,
+  ) async {
+    if (itemsPercentage.isEmpty) {
       return [];
     }
 
-    Map<String, List<SpotifySong>> songsByPlaylist = {};
-    Map<String, List<SpotifySong>> fallbackSongsByPlaylist = {};
+    Map<String, List<SpotifySong>> songsByItem = {};
+    Map<String, List<SpotifySong>> fallbackSongsByItem = {};
 
-    // Fetch songs from playlists and add them to songsByPlaylist and fallbackSongsByPlaylist
-    for (String playlistId in playlistPercentages.keys) {
-      final playlistSongs =
-          await _fetchSongsFromPlaylist(playlistId, timeRange);
-      songsByPlaylist[playlistId] = playlistSongs.playlistSongs;
-      fallbackSongsByPlaylist[playlistId] = playlistSongs.fallbackSongs;
+    for (int i = 0; i < itemsPercentage.length && i < items.length; i++) {
+      final itemId = itemsPercentage.keys.elementAt(i);
+      final item = items[i];
+      if (item is SpotifyPlaylist) {
+        final playlistSongs = await _fetchSongsFromPlaylist(itemId, timeRange);
+        songsByItem[itemId] = playlistSongs.playlistSongs;
+        fallbackSongsByItem[itemId] = playlistSongs.fallbackSongs;
+      } else if (item is Artist) {
+        final popularTracks = await getPopularTracks(item.id);
+        songsByItem[itemId] = popularTracks;
+        fallbackSongsByItem[itemId] = []; // TODO
+      }
     }
 
     // Use SongsMixer to mix the songs based on the percentages
     return songsMixer.mix(
-        songsByPlaylist, playlistPercentages, fallbackSongsByPlaylist);
+        songsByItem, itemsPercentage, fallbackSongsByItem);
   }
 
   Future<String> getActiveDevice() async {
@@ -223,6 +234,7 @@ class APIService {
                 artist['id'],
                 name: artist['name'],
                 imageUrl: artist['images']?[0]['url'],
+                spotifyUrl: artist['external_urls']['spotify'],
               ))
           .toList();
     }

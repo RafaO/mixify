@@ -41,7 +41,6 @@ class TokenManager {
       return DateTime.now().isBefore(expiryTime);
     }
     return true;
-    return false;
   }
 
   Future<void> expired() async {

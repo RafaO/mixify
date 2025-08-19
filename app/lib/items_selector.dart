@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mixafy/api_service.dart';
-import 'package:mixafy/entities/artist.dart';
 import 'package:mixafy/entities/selectable_item.dart';
-import 'package:mixafy/entities/spotify_playlist.dart';
 
 class ItemsSelector extends StatefulWidget {
   final APIService apiService;
@@ -23,7 +21,7 @@ class ItemsSelector extends StatefulWidget {
 class _ItemsSelectorState extends State<ItemsSelector> {
   late List<SelectableItem> selectedItems;
   final bool includeSavedTracksFeatureFlag = false;
-  final bool showTabsFeatureFlag = false;
+  final bool showTabsFeatureFlag = true;
 
   @override
   void initState() {
@@ -55,7 +53,7 @@ class _ItemsSelectorState extends State<ItemsSelector> {
                 height: 30,
               ),
               const SizedBox(width: 10),
-              const Text('Add things to your mix'),
+              const Text('Add to your mix'),
             ],
           ),
           actions: [
@@ -112,12 +110,12 @@ class SelectableList<T extends SelectableItem> extends StatefulWidget {
   final bool includeSavedTracksFeatureFlag;
 
   const SelectableList({
-    Key? key,
+    super.key,
     required this.fetchItems,
     required this.selectedItems,
     required this.onToggleSelection,
     required this.includeSavedTracksFeatureFlag,
-  }) : super(key: key);
+  });
 
   @override
   State<SelectableList<T>> createState() => _SelectableListState<T>();

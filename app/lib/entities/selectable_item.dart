@@ -6,4 +6,6 @@ abstract class SelectableItem {
   String get id;
 
   String? get description;
+
+  String? get spotifyUrl;
 }

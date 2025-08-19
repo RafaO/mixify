@@ -9,7 +9,14 @@ class Artist implements SelectableItem {
   final String? imageUrl;
   @override
   final String? description;
+  @override
+  final String? spotifyUrl;
 
-  Artist(this.id,
-      {required this.name, required this.imageUrl, this.description});
+  Artist(
+    this.id, {
+    required this.name,
+    required this.imageUrl,
+    required this.spotifyUrl,
+    this.description,
+  });
 }
