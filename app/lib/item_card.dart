@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 class ItemCard extends StatelessWidget {
   final SelectableItem item;
   final Function(SelectableItem) onRemove;
+  final bool displaySpotifyButton = false;
 
   const ItemCard({
     super.key,
@@ -51,24 +52,25 @@ class ItemCard extends StatelessWidget {
               ),
             ],
           ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton.icon(
-              onPressed: () async {
-                final url = Uri.parse(item.spotifyUrl ?? "");
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url, mode: LaunchMode.externalApplication);
-                }
-              },
-              icon: Image.asset(
-                'assets/Spotify_Icon_CMYK_Black.png',
-                width: 24.0,
-                height: 24.0,
-                color: Colors.green,
+          if (displaySpotifyButton && item.spotifyUrl != null)
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: () async {
+                  final url = Uri.parse(item.spotifyUrl ?? "");
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
+                },
+                icon: Image.asset(
+                  'assets/Spotify_Icon_CMYK_Black.png',
+                  width: 24.0,
+                  height: 24.0,
+                  color: Colors.green,
+                ),
+                label: const Text("View in Spotify"),
               ),
-              label: const Text("View in Spotify"),
             ),
-          ),
         ],
       ),
     );
