@@ -76,6 +76,10 @@ jobs:
       - name: Generate .env file
         run: echo "spotify_client_id=${{ secrets.SPOTIFY_CLIENT_ID }}" > .env
 
+      - name: Clean Gradle cache
+        run: |
+          rm -rf ~/.gradle/caches
+
       # Build Android release
       - run: flutter build appbundle --release
 
