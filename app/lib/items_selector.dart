@@ -21,12 +21,20 @@ class ItemsSelector extends StatefulWidget {
 class _ItemsSelectorState extends State<ItemsSelector> {
   late List<SelectableItem> selectedItems;
   final bool includeSavedTracksFeatureFlag = false;
+  bool _includeSavedTracks = false;
   final bool showTabsFeatureFlag = true;
 
   @override
   void initState() {
     super.initState();
     selectedItems = List.from(widget.alreadySelectedItems);
+  }
+
+  void _toggleIncludeSavedTracks() {
+    setState(() {
+      _includeSavedTracks = !_includeSavedTracks;
+    });
+    widget.onSelectionChanged(selectedItems);
   }
 
   void _toggleSelection(SelectableItem item) {
@@ -79,14 +87,18 @@ class _ItemsSelectorState extends State<ItemsSelector> {
                   SelectableList<SelectableItem>(
                     fetchItems: widget.apiService.fetchPlaylists,
                     selectedItems: selectedItems,
+                    includeSavedTracks: _includeSavedTracks,
                     onToggleSelection: _toggleSelection,
+                    onToggleIncludeSavedTracks: _toggleIncludeSavedTracks,
                     includeSavedTracksFeatureFlag:
                         includeSavedTracksFeatureFlag,
                   ),
                   SelectableList<SelectableItem>(
                     fetchItems: widget.apiService.getUserSavedArtists,
                     selectedItems: selectedItems,
+                    includeSavedTracks: _includeSavedTracks,
                     onToggleSelection: _toggleSelection,
+                    onToggleIncludeSavedTracks: _toggleIncludeSavedTracks,
                     includeSavedTracksFeatureFlag:
                         includeSavedTracksFeatureFlag,
                   ),
@@ -95,7 +107,9 @@ class _ItemsSelectorState extends State<ItemsSelector> {
             : SelectableList<SelectableItem>(
                 fetchItems: widget.apiService.fetchPlaylists,
                 selectedItems: selectedItems,
+                includeSavedTracks: _includeSavedTracks,
                 onToggleSelection: _toggleSelection,
+                onToggleIncludeSavedTracks: _toggleIncludeSavedTracks,
                 includeSavedTracksFeatureFlag: includeSavedTracksFeatureFlag,
               ),
       ),
@@ -106,14 +120,18 @@ class _ItemsSelectorState extends State<ItemsSelector> {
 class SelectableList<T extends SelectableItem> extends StatefulWidget {
   final Future<List<T>> Function() fetchItems;
   final List<SelectableItem> selectedItems;
+  final bool includeSavedTracks;
   final Function(SelectableItem) onToggleSelection;
+  final Function() onToggleIncludeSavedTracks;
   final bool includeSavedTracksFeatureFlag;
 
   const SelectableList({
     super.key,
     required this.fetchItems,
     required this.selectedItems,
+    required this.includeSavedTracks,
     required this.onToggleSelection,
+    required this.onToggleIncludeSavedTracks,
     required this.includeSavedTracksFeatureFlag,
   });
 
@@ -199,10 +217,11 @@ class _SelectableListState<T extends SelectableItem>
                         leading:
                             const Icon(Icons.favorite, color: Colors.green),
                         title: const Text('Include your saved tracks'),
-                        trailing: const Icon(Icons.circle_outlined),
-                        onTap: () {
-                          // Handle the selection of saved tracks
-                        },
+                        trailing: widget.includeSavedTracks
+                            ? const Icon(Icons.check_circle,
+                                color: Colors.green)
+                            : const Icon(Icons.circle_outlined),
+                        onTap: () => widget.onToggleIncludeSavedTracks(),
                       );
                     }
                     final item = filteredItems[
