@@ -128,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         "user-read-currently-playing,"
         "user-follow-read,"
         "user-library-read,"
-        // "app-remote-control," // this doesn't work on Android at least
+        "app-remote-control,"
     ;
     try {
       // If installed, use Spotify SDK authentication
