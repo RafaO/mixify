@@ -24,6 +24,7 @@ class _ItemsGridState extends State<ItemsGrid> {
   List<SelectableItem> items = [];
   bool isLoading = false;
   TimeRange selectedTimeRange = TimeRange.oneMonth();
+  bool includeSavedTracks = false;
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +161,11 @@ class _ItemsGridState extends State<ItemsGrid> {
                 try {
                   Result playing =
                       await SpotifyHelper(apiService: widget.apiService)
-                          .playMix(items, selectedTimeRange);
+                          .playMix(
+                    items,
+                    selectedTimeRange,
+                    includeSavedTracks,
+                  );
 
                   if (!context.mounted) return;
                   Navigator.of(context).pop();
@@ -287,6 +292,7 @@ class _ItemsGridState extends State<ItemsGrid> {
                 });
               },
               alreadySelectedItems: items,
+              onToggleIncludeSavedTracks: _onToggleIncludeSavedTracks,
             ),
           ));
         },
@@ -298,6 +304,10 @@ class _ItemsGridState extends State<ItemsGrid> {
         ),
       ),
     );
+  }
+
+  void _onToggleIncludeSavedTracks() {
+    includeSavedTracks = !includeSavedTracks;
   }
 
   Widget _buildEmptyState(BuildContext context, ThemeData theme) {
@@ -331,6 +341,7 @@ class _ItemsGridState extends State<ItemsGrid> {
                     });
                   },
                   alreadySelectedItems: items,
+                  onToggleIncludeSavedTracks: _onToggleIncludeSavedTracks,
                 ),
               ));
             },

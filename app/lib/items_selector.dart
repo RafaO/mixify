@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:mixafy/api_service.dart';
+import 'package:mixafy/entities/playlist_songs.dart';
 import 'package:mixafy/entities/selectable_item.dart';
 
 class ItemsSelector extends StatefulWidget {
   final APIService apiService;
   final Function(List<SelectableItem>) onSelectionChanged;
   final List<SelectableItem> alreadySelectedItems;
+  final Function() onToggleIncludeSavedTracks;
 
   const ItemsSelector({
     super.key,
     required this.apiService,
     required this.onSelectionChanged,
     required this.alreadySelectedItems,
+    required this.onToggleIncludeSavedTracks,
   });
 
   @override
@@ -20,9 +23,10 @@ class ItemsSelector extends StatefulWidget {
 
 class _ItemsSelectorState extends State<ItemsSelector> {
   late List<SelectableItem> selectedItems;
-  final bool includeSavedTracksFeatureFlag = false;
   bool _includeSavedTracks = false;
+  final bool includeSavedTracksFeatureFlag = true;
   final bool showTabsFeatureFlag = true;
+  late PlaylistSongs userSavedTracksPlaylist;
 
   @override
   void initState() {
@@ -35,6 +39,7 @@ class _ItemsSelectorState extends State<ItemsSelector> {
       _includeSavedTracks = !_includeSavedTracks;
     });
     widget.onSelectionChanged(selectedItems);
+    widget.onToggleIncludeSavedTracks();
   }
 
   void _toggleSelection(SelectableItem item) {
