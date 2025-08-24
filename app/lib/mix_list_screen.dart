@@ -6,8 +6,11 @@ class MixListScreen extends StatefulWidget {
   final List<Mix> mixes;
   final Function(Mix) onMixSelected;
 
-  const MixListScreen({Key? key, required this.mixes, required this.onMixSelected})
-      : super(key: key);
+  const MixListScreen({
+    super.key,
+    required this.mixes,
+    required this.onMixSelected,
+  });
 
   @override
   MixListScreenState createState() => MixListScreenState();
@@ -45,7 +48,8 @@ class MixListScreenState extends State<MixListScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: const Text('Delete',
+                style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -80,72 +84,79 @@ class MixListScreenState extends State<MixListScreen> {
       ),
       body: mixes.isEmpty
           ? const Center(
-        child: Text(
-          'No saved mixes yet!',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-        ),
-      )
+              child: Text(
+                'No saved mixes yet!',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
+            )
           : ListView.builder(
-        itemCount: mixes.length,
-        padding: const EdgeInsets.all(10),
-        itemBuilder: (context, index) {
-          final mix = mixes[index];
+              itemCount: mixes.length,
+              padding: const EdgeInsets.all(10),
+              itemBuilder: (context, index) {
+                final mix = mixes[index];
 
-          return Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            child: ExpansionTile(
-              tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              childrenPadding: const EdgeInsets.only(bottom: 10),
-              title: Text(
-                mix.mixName,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              subtitle: Text(
-                'Songs added in the last: ${mix.timeRange}',
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
-              ),
-              trailing: Wrap(
-                spacing: 5,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.play_arrow, color: Colors.green),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      widget.onMixSelected(mix);
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => _deleteMix(mix),
-                  ),
-                ],
-              ),
-              children: mix.items.map((playlist) {
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: playlist.imageUrl != null
-                        ? Image.network(
-                      playlist.imageUrl!,
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                    )
-                        : const Icon(Icons.music_note, size: 40, color: Colors.grey),
-                  ),
-                  title: Text(
-                    playlist.name,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                return Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15)),
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: ExpansionTile(
+                    tilePadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    childrenPadding: const EdgeInsets.only(bottom: 10),
+                    title: Text(
+                      mix.mixName,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                    subtitle: Text(
+                      'Songs added in the last: ${mix.timeRange}',
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                    trailing: Wrap(
+                      spacing: 5,
+                      children: [
+                        IconButton(
+                          icon:
+                              const Icon(Icons.play_arrow, color: Colors.green),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            widget.onMixSelected(mix);
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () => _deleteMix(mix),
+                        ),
+                      ],
+                    ),
+                    children: mix.items.map((playlist) {
+                      return ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 5),
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: playlist.imageUrl != null
+                              ? Image.network(
+                                  playlist.imageUrl!,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                )
+                              : const Icon(Icons.music_note,
+                                  size: 40, color: Colors.grey),
+                        ),
+                        title: Text(
+                          playlist.name,
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500),
+                        ),
+                      );
+                    }).toList(),
                   ),
                 );
-              }).toList(),
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }
