@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:mixafy/api_service.dart';
 import 'package:mixafy/entities/mix.dart';
@@ -258,7 +259,17 @@ class _ItemsGridState extends State<ItemsGrid> {
       timeRange: selectedTimeRange,
     );
 
-    bool result = await mix.save();
+    bool result;
+    try {
+      result = await mix.save();
+    } catch (e) {
+      FirebaseCrashlytics.instance.recordError(
+        Exception(e),
+        null,
+      );
+      debugPrint("Error saving mix: ${e.toString()}");
+      result = false;
+    }
 
     // Close the loading dialog
     if (mounted) {
