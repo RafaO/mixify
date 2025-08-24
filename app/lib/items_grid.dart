@@ -66,6 +66,7 @@ class _ItemsGridState extends State<ItemsGrid> {
                           items.clear();
                           items.addAll(mix.items);
                           selectedTimeRange = mix.timeRange;
+                          includeSavedTracks = mix.includeSavedTracks;
                         });
                       },
                     ),
