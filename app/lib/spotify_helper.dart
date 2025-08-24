@@ -26,6 +26,7 @@ class SpotifyHelper {
   Future<Result<void>> playMix(
     List<SelectableItem> items,
     TimeRange timeRange,
+    bool includeSavedTracks,
   ) async {
     // Step 1: Get the active device
     String deviceId = await _apiService.getActiveDevice();
@@ -37,12 +38,19 @@ class SpotifyHelper {
 
     Map<String, double> playlistPercentages = {};
 
-    final double percentagePerItem = 1.0 / items.length;
+    final double percentagePerItem =
+        1.0 / (includeSavedTracks ? items.length + 1 : items.length);
+
     for (var item in items) {
       playlistPercentages[item.id] = percentagePerItem;
     }
 
+    if (includeSavedTracks) {
+      playlistPercentages["saved_tracks"] = percentagePerItem;
+    }
+
     final listOfSongs = await _apiService.fetchAndMixAllSongsFromItems(
+      includeSavedTracks,
       items,
       playlistPercentages,
       timeRange,

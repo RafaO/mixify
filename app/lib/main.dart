@@ -1,5 +1,3 @@
-import 'dart:developer' as developer;
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -128,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         "user-read-currently-playing,"
         "user-follow-read,"
         "user-library-read,"
-        // "app-remote-control," // this doesn't work on Android at least
+        "app-remote-control,"
     ;
     try {
       // If installed, use Spotify SDK authentication

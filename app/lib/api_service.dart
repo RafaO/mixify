@@ -109,6 +109,7 @@ class APIService {
   }
 
   Future<List<SpotifySong>> fetchAndMixAllSongsFromItems(
+    bool includeSavedTracks,
     List<SelectableItem> items,
     Map<String, double> itemsPercentage,
     TimeRange timeRange,
@@ -134,9 +135,14 @@ class APIService {
       }
     }
 
+    if (includeSavedTracks) {
+      final savedTracks = await _fetchSavedTracks(timeRange);
+      songsByItem['saved_tracks'] = savedTracks.playlistSongs;
+      fallbackSongsByItem['saved_tracks'] = savedTracks.fallbackSongs;
+    }
+
     // Use SongsMixer to mix the songs based on the percentages
-    return songsMixer.mix(
-        songsByItem, itemsPercentage, fallbackSongsByItem);
+    return songsMixer.mix(songsByItem, itemsPercentage, fallbackSongsByItem);
   }
 
   Future<String> getActiveDevice() async {
@@ -162,14 +168,17 @@ class APIService {
   }
 
   Future<PlaylistSongs> _fetchSavedTracks(TimeRange timeRange) async {
-    return _fetchSongs('/v1/me/tracks', timeRange);
+    return _fetchSongs('/v1/me/tracks', timeRange, limit: 50);
   }
 
-  Future<PlaylistSongs> _fetchSongs(String url, TimeRange timeRange) async {
+  Future<PlaylistSongs> _fetchSongs(
+    String url,
+    TimeRange timeRange, {
+    int limit = 100,
+  }) async {
     List<SpotifySong> playlistSongs = [];
     List<SpotifySong> fallbackSongs = [];
     int offset = 0;
-    const int limit = 100;
 
     final DateTime filterStartDate = timeRange.getStartDate();
 

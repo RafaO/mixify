@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mixafy/api_service.dart';
+import 'package:mixafy/entities/playlist_songs.dart';
 import 'package:mixafy/entities/selectable_item.dart';
 
 class ItemsSelector extends StatefulWidget {
@@ -20,13 +21,22 @@ class ItemsSelector extends StatefulWidget {
 
 class _ItemsSelectorState extends State<ItemsSelector> {
   late List<SelectableItem> selectedItems;
-  final bool includeSavedTracksFeatureFlag = false;
+  bool _includeSavedTracks = false;
+  final bool includeSavedTracksFeatureFlag = true;
   final bool showTabsFeatureFlag = true;
+  late PlaylistSongs userSavedTracksPlaylist;
 
   @override
   void initState() {
     super.initState();
     selectedItems = List.from(widget.alreadySelectedItems);
+  }
+
+  void _toggleIncludeSavedTracks() {
+    setState(() {
+      _includeSavedTracks = !_includeSavedTracks;
+    });
+    widget.onSelectionChanged(selectedItems);
   }
 
   void _toggleSelection(SelectableItem item) {
@@ -79,24 +89,25 @@ class _ItemsSelectorState extends State<ItemsSelector> {
                   SelectableList<SelectableItem>(
                     fetchItems: widget.apiService.fetchPlaylists,
                     selectedItems: selectedItems,
+                    includeSavedTracks: _includeSavedTracks,
                     onToggleSelection: _toggleSelection,
-                    includeSavedTracksFeatureFlag:
-                        includeSavedTracksFeatureFlag,
+                    onToggleIncludeSavedTracks: _toggleIncludeSavedTracks,
                   ),
                   SelectableList<SelectableItem>(
                     fetchItems: widget.apiService.getUserSavedArtists,
                     selectedItems: selectedItems,
+                    includeSavedTracks: _includeSavedTracks,
                     onToggleSelection: _toggleSelection,
-                    includeSavedTracksFeatureFlag:
-                        includeSavedTracksFeatureFlag,
+                    onToggleIncludeSavedTracks: _toggleIncludeSavedTracks,
                   ),
                 ],
               )
             : SelectableList<SelectableItem>(
                 fetchItems: widget.apiService.fetchPlaylists,
                 selectedItems: selectedItems,
+                includeSavedTracks: _includeSavedTracks,
                 onToggleSelection: _toggleSelection,
-                includeSavedTracksFeatureFlag: includeSavedTracksFeatureFlag,
+                onToggleIncludeSavedTracks: _toggleIncludeSavedTracks,
               ),
       ),
     );
@@ -106,15 +117,17 @@ class _ItemsSelectorState extends State<ItemsSelector> {
 class SelectableList<T extends SelectableItem> extends StatefulWidget {
   final Future<List<T>> Function() fetchItems;
   final List<SelectableItem> selectedItems;
+  final bool includeSavedTracks;
   final Function(SelectableItem) onToggleSelection;
-  final bool includeSavedTracksFeatureFlag;
+  final Function() onToggleIncludeSavedTracks;
 
   const SelectableList({
     super.key,
     required this.fetchItems,
     required this.selectedItems,
+    required this.includeSavedTracks,
     required this.onToggleSelection,
-    required this.includeSavedTracksFeatureFlag,
+    required this.onToggleIncludeSavedTracks,
   });
 
   @override
@@ -191,24 +204,9 @@ class _SelectableListState<T extends SelectableItem>
           child: isLoading
               ? const Center(child: CircularProgressIndicator())
               : ListView.builder(
-                  itemCount: filteredItems.length +
-                      (widget.includeSavedTracksFeatureFlag ? 1 : 0),
+                  itemCount: filteredItems.length,
                   itemBuilder: (context, index) {
-                    if (widget.includeSavedTracksFeatureFlag && index == 0) {
-                      return ListTile(
-                        leading:
-                            const Icon(Icons.favorite, color: Colors.green),
-                        title: const Text('Include your saved tracks'),
-                        trailing: const Icon(Icons.circle_outlined),
-                        onTap: () {
-                          // Handle the selection of saved tracks
-                        },
-                      );
-                    }
-                    final item = filteredItems[
-                        widget.includeSavedTracksFeatureFlag
-                            ? index - 1
-                            : index];
+                    final item = filteredItems[index];
                     final isSelected = widget.selectedItems.contains(item);
                     return ListTile(
                       leading: item.imageUrl != null

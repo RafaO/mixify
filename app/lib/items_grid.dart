@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:mixafy/api_service.dart';
 import 'package:mixafy/entities/mix.dart';
@@ -24,6 +25,7 @@ class _ItemsGridState extends State<ItemsGrid> {
   List<SelectableItem> items = [];
   bool isLoading = false;
   TimeRange selectedTimeRange = TimeRange.oneMonth();
+  bool includeSavedTracks = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +45,7 @@ class _ItemsGridState extends State<ItemsGrid> {
                         builder: (context) => SaveMixScreen(
                           items: items,
                           onSave: saveMix,
+                          includeSavedTracks: includeSavedTracks,
                         ),
                       ),
                     );
@@ -62,8 +65,9 @@ class _ItemsGridState extends State<ItemsGrid> {
                       onMixSelected: (Mix mix) {
                         setState(() {
                           items.clear();
-                          items.addAll(mix.playlists);
+                          items.addAll(mix.items);
                           selectedTimeRange = mix.timeRange;
+                          includeSavedTracks = mix.includeSavedTracks;
                         });
                       },
                     ),
@@ -100,6 +104,15 @@ class _ItemsGridState extends State<ItemsGrid> {
                         _buildTimeBubble(TimeRange.forever(), theme),
                       ],
                     ),
+                  ),
+                  const SizedBox(height: 16),
+                  ListTile(
+                    leading: const Icon(Icons.favorite, color: Colors.green),
+                    title: const Text('Include your liked songs'),
+                    trailing: includeSavedTracks
+                        ? const Icon(Icons.check_circle, color: Colors.green)
+                        : const Icon(Icons.circle_outlined),
+                    onTap: _onToggleIncludeSavedTracks,
                   ),
                   const SizedBox(height: 16),
                   Expanded(
@@ -160,7 +173,11 @@ class _ItemsGridState extends State<ItemsGrid> {
                 try {
                   Result playing =
                       await SpotifyHelper(apiService: widget.apiService)
-                          .playMix(items, selectedTimeRange);
+                          .playMix(
+                    items,
+                    selectedTimeRange,
+                    includeSavedTracks,
+                  );
 
                   if (!context.mounted) return;
                   Navigator.of(context).pop();
@@ -240,11 +257,22 @@ class _ItemsGridState extends State<ItemsGrid> {
     final mix = Mix(
       mixName: mixName,
       userId: "me", // TODO
-      playlists: items,
+      items: items,
+      includeSavedTracks: includeSavedTracks,
       timeRange: selectedTimeRange,
     );
 
-    bool result = await mix.save();
+    bool result;
+    try {
+      result = await mix.save();
+    } catch (e) {
+      FirebaseCrashlytics.instance.recordError(
+        Exception(e),
+        null,
+      );
+      debugPrint("Error saving mix: ${e.toString()}");
+      result = false;
+    }
 
     // Close the loading dialog
     if (mounted) {
@@ -299,6 +327,9 @@ class _ItemsGridState extends State<ItemsGrid> {
       ),
     );
   }
+
+  void _onToggleIncludeSavedTracks() =>
+      setState(() => includeSavedTracks = !includeSavedTracks);
 
   Widget _buildEmptyState(BuildContext context, ThemeData theme) {
     return Center(
