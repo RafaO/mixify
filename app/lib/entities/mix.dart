@@ -5,13 +5,15 @@ import 'package:mixafy/entities/time_range.dart';
 class Mix {
   final String mixName;
   final String userId;
-  final List<SelectableItem> playlists;
+  final List<SelectableItem> items;
+  final bool includeSavedTracks;
   final TimeRange timeRange;
 
   Mix({
     required this.mixName,
     required this.userId,
-    required this.playlists,
+    required this.items,
+    required this.includeSavedTracks,
     required this.timeRange,
   });
 

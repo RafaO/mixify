@@ -122,7 +122,7 @@ class MixListScreenState extends State<MixListScreen> {
                   ),
                 ],
               ),
-              children: mix.playlists.map((playlist) {
+              children: mix.items.map((playlist) {
                 return ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                   leading: ClipRRect(

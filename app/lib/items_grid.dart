@@ -64,7 +64,7 @@ class _ItemsGridState extends State<ItemsGrid> {
                       onMixSelected: (Mix mix) {
                         setState(() {
                           items.clear();
-                          items.addAll(mix.playlists);
+                          items.addAll(mix.items);
                           selectedTimeRange = mix.timeRange;
                         });
                       },
@@ -255,7 +255,8 @@ class _ItemsGridState extends State<ItemsGrid> {
     final mix = Mix(
       mixName: mixName,
       userId: "me", // TODO
-      playlists: items,
+      items: items,
+      includeSavedTracks: includeSavedTracks,
       timeRange: selectedTimeRange,
     );
 

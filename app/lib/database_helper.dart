@@ -26,14 +26,15 @@ class DatabaseHelper {
 
     return await openDatabase(
       dbPath,
-      version: 1,
+      version: 2,
       onCreate: (db, version) async {
         await db.execute('''
   CREATE TABLE mixes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     mixName TEXT UNIQUE,
     userId TEXT,
-    timeRange TEXT
+    timeRange TEXT,
+    includeSavedTracks INTEGER DEFAULT 0
   )
 ''');
 
@@ -56,6 +57,11 @@ class DatabaseHelper {
   )
 ''');
       },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute('ALTER TABLE mixes ADD COLUMN includeSavedTracks INTEGER DEFAULT 0');
+        }
+      },
     );
   }
 
@@ -66,12 +72,13 @@ class DatabaseHelper {
       {
         'mixName': mix.mixName,
         'userId': mix.userId,
-        'timeRange': mix.timeRange.toJson()
+        'timeRange': mix.timeRange.toJson(),
+        'includeSavedTracks': mix.includeSavedTracks ? 1 : 0
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
 
-    for (var playlist in mix.playlists) {
+    for (var playlist in mix.items) {
       await db.insert(
         'playlists',
         {
@@ -112,7 +119,8 @@ class DatabaseHelper {
         mixName: mixRow['mixName'],
         userId: mixRow['userId'],
         timeRange: TimeRange.fromJson(mixRow['timeRange']),
-        playlists: playlists,
+        items: playlists,
+        includeSavedTracks: (mixRow['includeSavedTracks'] ?? 0) == 1,
       ));
     }
 

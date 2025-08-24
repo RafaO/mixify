@@ -6,10 +6,10 @@ class SaveMixScreen extends StatefulWidget {
   final Function(String mixName) onSave;
 
   const SaveMixScreen({
-    Key? key,
+    super.key,
     required this.items,
     required this.onSave,
-  }) : super(key: key);
+  });
 
   @override
   State<SaveMixScreen> createState() => _SaveMixScreenState();
