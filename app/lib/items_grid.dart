@@ -107,7 +107,7 @@ class _ItemsGridState extends State<ItemsGrid> {
                   const SizedBox(height: 16),
                   ListTile(
                     leading: const Icon(Icons.favorite, color: Colors.green),
-                    title: const Text('Include your saved tracks'),
+                    title: const Text('Include your liked songs'),
                     trailing: includeSavedTracks
                         ? const Icon(Icons.check_circle, color: Colors.green)
                         : const Icon(Icons.circle_outlined),

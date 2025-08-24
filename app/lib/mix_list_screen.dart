@@ -130,29 +130,46 @@ class MixListScreenState extends State<MixListScreen> {
                         ),
                       ],
                     ),
-                    children: mix.items.map((playlist) {
-                      return ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 5),
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: playlist.imageUrl != null
-                              ? Image.network(
-                                  playlist.imageUrl!,
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                )
-                              : const Icon(Icons.music_note,
-                                  size: 40, color: Colors.grey),
+                    children: [
+                      if (mix.includeSavedTracks)
+                        ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 5),
+                          leading: const Icon(
+                            Icons.favorite,
+                            color: Colors.green,
+                            size: 50,
+                          ),
+                          title: const Text(
+                            'Liked Tracks',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w500),
+                          ),
                         ),
-                        title: Text(
-                          playlist.name,
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500),
-                        ),
-                      );
-                    }).toList(),
+                      ...mix.items.map((playlist) {
+                        return ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 5),
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: playlist.imageUrl != null
+                                ? Image.network(
+                                    playlist.imageUrl!,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                  )
+                                : const Icon(Icons.music_note,
+                                    size: 40, color: Colors.grey),
+                          ),
+                          title: Text(
+                            playlist.name,
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w500),
+                          ),
+                        );
+                      }),
+                    ],
                   ),
                 );
               },
