@@ -103,6 +103,15 @@ class _ItemsGridState extends State<ItemsGrid> {
                     ),
                   ),
                   const SizedBox(height: 16),
+                  ListTile(
+                    leading: const Icon(Icons.favorite, color: Colors.green),
+                    title: const Text('Include your saved tracks'),
+                    trailing: includeSavedTracks
+                        ? const Icon(Icons.check_circle, color: Colors.green)
+                        : const Icon(Icons.circle_outlined),
+                    onTap: _onToggleIncludeSavedTracks,
+                  ),
+                  const SizedBox(height: 16),
                   Expanded(
                     child: items.isEmpty
                         ? _buildEmptyState(context, theme)
@@ -292,7 +301,6 @@ class _ItemsGridState extends State<ItemsGrid> {
                 });
               },
               alreadySelectedItems: items,
-              onToggleIncludeSavedTracks: _onToggleIncludeSavedTracks,
             ),
           ));
         },
@@ -306,9 +314,8 @@ class _ItemsGridState extends State<ItemsGrid> {
     );
   }
 
-  void _onToggleIncludeSavedTracks() {
-    includeSavedTracks = !includeSavedTracks;
-  }
+  void _onToggleIncludeSavedTracks() =>
+      setState(() => includeSavedTracks = !includeSavedTracks);
 
   Widget _buildEmptyState(BuildContext context, ThemeData theme) {
     return Center(
@@ -341,7 +348,6 @@ class _ItemsGridState extends State<ItemsGrid> {
                     });
                   },
                   alreadySelectedItems: items,
-                  onToggleIncludeSavedTracks: _onToggleIncludeSavedTracks,
                 ),
               ));
             },

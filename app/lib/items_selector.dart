@@ -7,14 +7,12 @@ class ItemsSelector extends StatefulWidget {
   final APIService apiService;
   final Function(List<SelectableItem>) onSelectionChanged;
   final List<SelectableItem> alreadySelectedItems;
-  final Function() onToggleIncludeSavedTracks;
 
   const ItemsSelector({
     super.key,
     required this.apiService,
     required this.onSelectionChanged,
     required this.alreadySelectedItems,
-    required this.onToggleIncludeSavedTracks,
   });
 
   @override
@@ -39,7 +37,6 @@ class _ItemsSelectorState extends State<ItemsSelector> {
       _includeSavedTracks = !_includeSavedTracks;
     });
     widget.onSelectionChanged(selectedItems);
-    widget.onToggleIncludeSavedTracks();
   }
 
   void _toggleSelection(SelectableItem item) {
@@ -95,8 +92,6 @@ class _ItemsSelectorState extends State<ItemsSelector> {
                     includeSavedTracks: _includeSavedTracks,
                     onToggleSelection: _toggleSelection,
                     onToggleIncludeSavedTracks: _toggleIncludeSavedTracks,
-                    includeSavedTracksFeatureFlag:
-                        includeSavedTracksFeatureFlag,
                   ),
                   SelectableList<SelectableItem>(
                     fetchItems: widget.apiService.getUserSavedArtists,
@@ -104,8 +99,6 @@ class _ItemsSelectorState extends State<ItemsSelector> {
                     includeSavedTracks: _includeSavedTracks,
                     onToggleSelection: _toggleSelection,
                     onToggleIncludeSavedTracks: _toggleIncludeSavedTracks,
-                    includeSavedTracksFeatureFlag:
-                        includeSavedTracksFeatureFlag,
                   ),
                 ],
               )
@@ -115,7 +108,6 @@ class _ItemsSelectorState extends State<ItemsSelector> {
                 includeSavedTracks: _includeSavedTracks,
                 onToggleSelection: _toggleSelection,
                 onToggleIncludeSavedTracks: _toggleIncludeSavedTracks,
-                includeSavedTracksFeatureFlag: includeSavedTracksFeatureFlag,
               ),
       ),
     );
@@ -128,7 +120,6 @@ class SelectableList<T extends SelectableItem> extends StatefulWidget {
   final bool includeSavedTracks;
   final Function(SelectableItem) onToggleSelection;
   final Function() onToggleIncludeSavedTracks;
-  final bool includeSavedTracksFeatureFlag;
 
   const SelectableList({
     super.key,
@@ -137,7 +128,6 @@ class SelectableList<T extends SelectableItem> extends StatefulWidget {
     required this.includeSavedTracks,
     required this.onToggleSelection,
     required this.onToggleIncludeSavedTracks,
-    required this.includeSavedTracksFeatureFlag,
   });
 
   @override
@@ -214,25 +204,9 @@ class _SelectableListState<T extends SelectableItem>
           child: isLoading
               ? const Center(child: CircularProgressIndicator())
               : ListView.builder(
-                  itemCount: filteredItems.length +
-                      (widget.includeSavedTracksFeatureFlag ? 1 : 0),
+                  itemCount: filteredItems.length,
                   itemBuilder: (context, index) {
-                    if (widget.includeSavedTracksFeatureFlag && index == 0) {
-                      return ListTile(
-                        leading:
-                            const Icon(Icons.favorite, color: Colors.green),
-                        title: const Text('Include your saved tracks'),
-                        trailing: widget.includeSavedTracks
-                            ? const Icon(Icons.check_circle,
-                                color: Colors.green)
-                            : const Icon(Icons.circle_outlined),
-                        onTap: () => widget.onToggleIncludeSavedTracks(),
-                      );
-                    }
-                    final item = filteredItems[
-                        widget.includeSavedTracksFeatureFlag
-                            ? index - 1
-                            : index];
+                    final item = filteredItems[index];
                     final isSelected = widget.selectedItems.contains(item);
                     return ListTile(
                       leading: item.imageUrl != null
