@@ -135,13 +135,17 @@ class MixListScreenState extends State<MixListScreen> {
                         ListTile(
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 5),
-                          leading: const Icon(
-                            Icons.favorite,
-                            color: Colors.green,
-                            size: 50,
+                          leading: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: Icon(
+                              Icons.favorite,
+                              color: Colors.green,
+                              size: 40,
+                            ),
                           ),
                           title: const Text(
-                            'Liked Tracks',
+                            'Your Liked Songs',
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w500),
                           ),

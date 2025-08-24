@@ -45,6 +45,7 @@ class _ItemsGridState extends State<ItemsGrid> {
                         builder: (context) => SaveMixScreen(
                           items: items,
                           onSave: saveMix,
+                          includeSavedTracks: includeSavedTracks,
                         ),
                       ),
                     );

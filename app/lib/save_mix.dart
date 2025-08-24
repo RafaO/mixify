@@ -3,12 +3,14 @@ import 'package:mixafy/entities/selectable_item.dart';
 
 class SaveMixScreen extends StatefulWidget {
   final List<SelectableItem> items;
+  final bool includeSavedTracks;
   final Function(String mixName) onSave;
 
   const SaveMixScreen({
     super.key,
     required this.items,
     required this.onSave,
+    required this.includeSavedTracks,
   });
 
   @override
@@ -48,9 +50,29 @@ class _SaveMixScreenState extends State<SaveMixScreen> {
               child: widget.items.isEmpty
                   ? const Center(child: Text("No playlists selected"))
                   : ListView.builder(
-                      itemCount: widget.items.length,
+                      itemCount: widget.includeSavedTracks
+                          ? (widget.items.length + 1)
+                          : widget.items.length,
                       itemBuilder: (context, index) {
-                        final playlist = widget.items[index];
+                        if (widget.includeSavedTracks && index == 0) {
+                          return const Card(
+                            child: ListTile(
+                              leading: SizedBox(
+                                width: 40,
+                                height: 40,
+                                child: Icon(
+                                  Icons.favorite,
+                                  color: Colors.green,
+                                  size: 28,
+                                ),
+                              ),
+                              title: Text('Your Liked Songs'),
+                            ),
+                          );
+                        }
+                        final adjustedIndex =
+                            widget.includeSavedTracks ? index - 1 : index;
+                        final playlist = widget.items[adjustedIndex];
                         return Card(
                           child: ListTile(
                             leading: playlist.imageUrl != null
