@@ -111,6 +111,12 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   Future<void> authenticateWithSpotify() async {
+    // check spotify app is installed
+    final spotifyUri = Uri.parse('spotify://');
+    if (!await canLaunchUrl(spotifyUri)) {
+      if (mounted) _showSpotifyNotInstalledDialog(context);
+      return;
+    }
     String clientId = dotenv.env['spotify_client_id'] ?? '';
     if (clientId.isEmpty) {
       FirebaseCrashlytics.instance.recordError(
