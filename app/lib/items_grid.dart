@@ -124,8 +124,7 @@ class _ItemsGridState extends State<ItemsGrid> {
                               crossAxisCount: 2,
                               crossAxisSpacing: 12,
                               mainAxisSpacing: 12,
-                              childAspectRatio:
-                                  0.65, // Adjusted for taller cards
+                              childAspectRatio: 0.8,
                             ),
                             itemCount: items.length + 1,
                             itemBuilder: (context, index) {

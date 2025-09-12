@@ -33,9 +33,9 @@ class ItemCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Expanded(
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
                   child: Text(
                     item.name,
                     overflow: TextOverflow.ellipsis,
@@ -43,7 +43,6 @@ class ItemCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const Spacer(),
               IconButton(
                 icon: const Icon(Icons.delete),
                 onPressed: () => onRemove(item),
