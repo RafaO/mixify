@@ -1,3 +1,4 @@
+import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -7,10 +8,11 @@ import 'package:mixafy/api_service.dart';
 import 'package:mixafy/auth_view.dart';
 import 'package:mixafy/items_grid.dart';
 import 'package:mixafy/songs_mixer.dart';
+import 'package:mixafy/spotify_auth.dart';
+import 'package:mixafy/spotify_auth_web_view_screen.dart';
 import 'package:mixafy/theme.dart';
 import 'package:mixafy/token_manager.dart';
 import 'package:mixafy/utils.dart';
-import 'package:spotify_sdk/spotify_sdk.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'firebase_options.dart';
@@ -71,6 +73,18 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+
+    final AppLinks appLinks = AppLinks();
+    appLinks.uriLinkStream.listen((Uri uri) async {
+      debugPrint("Received deep link: $uri");
+      if (uri.host == "callback") {
+        final code = uri.queryParameters['code'];
+        if (code != null) {
+          _handleCode(code);
+        }
+      }
+    });
+
     _apiService = APIService(
       onUnauthorised: () {
         // Navigate to the auth screen
@@ -99,6 +113,17 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     }
   }
 
+  void _handleCode(String code) async {
+    debugPrint("code: $code");
+    final response = await fetchSpotifyToken(code);
+    final token = response['access_token'] as String;
+    debugPrint('token from web auth: $token');
+    widget._tokenManager.tokenReceived(token);
+    setState(() {
+      authenticated = true;
+    });
+  }
+
   Future<void> _checkAuth() async {
     bool valid = await widget._tokenManager.isTokenValid();
 
@@ -111,37 +136,42 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   Future<void> authenticateWithSpotify() async {
-    String clientId = dotenv.env['spotify_client_id'] ?? '';
-    if (clientId.isEmpty) {
-      FirebaseCrashlytics.instance.recordError(
-        Exception("clientID is empty"),
-        null,
-      );
-      return;
-    }
-    const redirectUri = 'mixafy://callback';
-    const String scope = "playlist-read-private,"
-        "user-modify-playback-state,"
-        "user-read-playback-state,"
-        "user-read-currently-playing,"
-        "user-follow-read,"
-        "user-library-read,"
-        "app-remote-control,"
-    ;
-    try {
-      // If installed, use Spotify SDK authentication
-      var accessToken = await SpotifySdk.getAccessToken(
-        clientId: clientId,
-        redirectUrl: redirectUri,
-        scope: scope,
-      );
-      widget._tokenManager.tokenReceived(accessToken);
-      setState(() {
-        authenticated = true;
+    // check spotify app is installed
+    final spotifyUri = Uri.parse('spotify://');
+    if (!await canLaunchUrl(spotifyUri)) {
+      final authUrl = Uri.https('accounts.spotify.com', '/authorize', {
+        'client_id': clientId,
+        'response_type': 'code',
+        'redirect_uri': redirectUri,
+        'scope': scopes,
+        'show_dialog': 'true',
       });
-    } on Exception catch (e, s) {
-      if (mounted) _showSpotifyNotInstalledDialog(context);
-      FirebaseCrashlytics.instance.recordError(e, s);
+
+      final result = await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => SpotifyAuthWebViewScreen(
+            initialUrl: authUrl.toString(),
+            redirectUriScheme: 'mixafy',
+            expectedRedirectUriHost: 'callback',
+          ),
+        ),
+      );
+      if (result != null && result.containsKey('code')) {
+        _handleCode(result['code'] as String);
+      } // TODO handle error case
+    } else {
+      authenticateWithSpotifyApp(
+        (token) {
+          widget._tokenManager.tokenReceived(token);
+          setState(() {
+            authenticated = true;
+          });
+        },
+        (e, s) {
+          if (mounted) _showSpotifyNotInstalledDialog(context);
+          FirebaseCrashlytics.instance.recordError(e, s);
+        },
+      );
     }
   }
 
