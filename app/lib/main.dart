@@ -9,6 +9,7 @@ import 'package:mixafy/auth_view.dart';
 import 'package:mixafy/items_grid.dart';
 import 'package:mixafy/songs_mixer.dart';
 import 'package:mixafy/spotify_auth.dart';
+import 'package:mixafy/spotify_auth_web_view_screen.dart';
 import 'package:mixafy/theme.dart';
 import 'package:mixafy/token_manager.dart';
 import 'package:mixafy/utils.dart';
@@ -79,14 +80,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       if (uri.host == "callback") {
         final code = uri.queryParameters['code'];
         if (code != null) {
-          debugPrint("code: $code");
-          final response = await fetchSpotifyToken(code);
-          final token = response['access_token'] as String;
-          debugPrint('token from web auth: $token');
-          widget._tokenManager.tokenReceived(token);
-          setState(() {
-            authenticated = true;
-          });
+          _handleCode(code);
         }
       }
     });
@@ -119,6 +113,17 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     }
   }
 
+  void _handleCode(String code) async {
+    debugPrint("code: $code");
+    final response = await fetchSpotifyToken(code);
+    final token = response['access_token'] as String;
+    debugPrint('token from web auth: $token');
+    widget._tokenManager.tokenReceived(token);
+    setState(() {
+      authenticated = true;
+    });
+  }
+
   Future<void> _checkAuth() async {
     bool valid = await widget._tokenManager.isTokenValid();
 
@@ -134,7 +139,26 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // check spotify app is installed
     final spotifyUri = Uri.parse('spotify://');
     if (!await canLaunchUrl(spotifyUri)) {
-      authenticateWithSpotifyWeb();
+      final authUrl = Uri.https('accounts.spotify.com', '/authorize', {
+        'client_id': clientId,
+        'response_type': 'code',
+        'redirect_uri': redirectUri,
+        'scope': scopes,
+        'show_dialog': 'true',
+      });
+
+      final result = await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => SpotifyAuthWebViewScreen(
+            initialUrl: authUrl.toString(),
+            redirectUriScheme: 'mixafy',
+            expectedRedirectUriHost: 'callback',
+          ),
+        ),
+      );
+      if (result != null && result.containsKey('code')) {
+        _handleCode(result['code'] as String);
+      } // TODO handle error case
     } else {
       authenticateWithSpotifyApp(
         (token) {

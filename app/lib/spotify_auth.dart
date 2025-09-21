@@ -19,25 +19,6 @@ final String scopes = [
   "app-remote-control"
 ].join(' ');
 
-Future<void> authenticateWithSpotifyWeb() async {
-  final authUrl = Uri.https('accounts.spotify.com', '/authorize', {
-    'client_id': clientId,
-    'response_type': 'code',
-    'redirect_uri': redirectUri,
-    'scope': scopes,
-    'show_dialog': 'true',
-  });
-
-  if (await canLaunchUrl(authUrl)) {
-    await launchUrl(authUrl, mode: LaunchMode.externalApplication);
-  } else {
-    FirebaseCrashlytics.instance.recordError(
-      Exception("Failed to launch Spotify auth URL"),
-      null,
-    );
-  }
-}
-
 Future<Map<String, dynamic>> fetchSpotifyToken(String code) async {
   if (clientId.isEmpty || clientSecret.isEmpty) {
     throw Exception('Spotify client credentials are not set in .env');
@@ -77,7 +58,6 @@ Future<Map<String, dynamic>> fetchSpotifyToken(String code) async {
 
 Future<void> authenticateWithSpotifyApp(Function(String) onTokenReceived,
     Function(Exception, StackTrace) onException) async {
-  String clientId = dotenv.env['spotify_client_id'] ?? '';
   if (clientId.isEmpty) {
     FirebaseCrashlytics.instance.recordError(
       Exception("clientID is empty"),
