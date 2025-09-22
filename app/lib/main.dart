@@ -69,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   late final APIService _apiService;
 
   bool authenticated = false;
+  bool _isAuthFlowActive = false;
 
   @override
   void initState() {
@@ -108,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.resumed && !_isAuthFlowActive) {
       _checkAuth();
     }
   }
@@ -125,6 +126,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   Future<void> _checkAuth() async {
+    if (_isAuthFlowActive) return;
+
     bool valid = await widget._tokenManager.isTokenValid();
 
     if (mounted && !valid) {
@@ -147,29 +150,97 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         'show_dialog': 'true',
       });
 
-      final result = await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => SpotifyAuthWebViewScreen(
-            initialUrl: authUrl.toString(),
-            redirectUriScheme: 'mixafy',
-            expectedRedirectUriHost: 'callback',
+      if (!mounted) return;
+      setState(() {
+        _isAuthFlowActive = true;
+      });
+
+      Map<String, String?>? result;
+      try {
+        result = await Navigator.of(context).push<Map<String, String?>>(
+          MaterialPageRoute(
+            builder: (context) => SpotifyAuthWebViewScreen(
+              initialUrl: authUrl.toString(),
+              redirectUriScheme: 'mixafy',
+              expectedRedirectUriHost: 'callback',
+            ),
+            fullscreenDialog: true,
           ),
-        ),
-      );
-      if (result != null && result.containsKey('code')) {
-        _handleCode(result['code'] as String);
-      } // TODO handle error case
+        );
+
+        // Handle the result
+        if (result != null) {
+          if (result.containsKey('error')) {
+            final error = result['error'];
+            debugPrint("Spotify Auth Error from WebView: $error");
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Spotify Login Failed: $error")));
+            }
+          } else if (result.containsKey('code')) {
+            final code = result['code'];
+            if (code != null && code.isNotEmpty) {
+              _handleCode(code);
+            } else {
+              // TODO log error in firebase
+              debugPrint("Received null or empty code from WebView");
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content:
+                        Text("Spotify Login Failed: Invalid code received.")));
+              }
+            }
+          }
+        } else {
+          // User cancelled the WebView
+          debugPrint("Spotify Auth WebView was cancelled by user.");
+        }
+      } catch (e, s) {
+        debugPrint(
+            "Error during Spotify WebView navigation or handling: $e\n$s");
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("An error occurred during login.")));
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isAuthFlowActive = false;
+          });
+          // If auth wasn't successful after the flow, re-check.
+          // This allows _checkAuth to potentially pop to root if needed.
+          if (!authenticated) {
+            _checkAuth();
+          }
+        }
+      }
     } else {
+      // ----- SPOTIFY SDK AUTH LOGIC -----
+      if (!mounted) return;
+      setState(() {
+        _isAuthFlowActive = true;
+      });
       authenticateWithSpotifyApp(
         (token) {
+          // onTokenReceived
           widget._tokenManager.tokenReceived(token);
-          setState(() {
-            authenticated = true;
-          });
+          if (mounted) {
+            setState(() {
+              authenticated = true;
+              _isAuthFlowActive = false;
+            });
+          }
         },
         (e, s) {
-          if (mounted) _showSpotifyNotInstalledDialog(context);
-          FirebaseCrashlytics.instance.recordError(e, s);
+          // onException
+          if (mounted) {
+            _showSpotifyNotInstalledDialog(context);
+            FirebaseCrashlytics.instance.recordError(e, s);
+            setState(() {
+              _isAuthFlowActive = false;
+            });
+            _checkAuth();
+          }
         },
       );
     }
