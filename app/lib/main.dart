@@ -88,11 +88,12 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     _apiService = APIService(
       onUnauthorised: () {
-        // Navigate to the auth screen
-        setState(() {
-          authenticated = false;
+        if (!_isAuthFlowActive) {
+          setState(() {
+            authenticated = false;
+          });
           Navigator.popUntil(context, ModalRoute.withName('/'));
-        });
+        }
       },
       tokenManager: widget._tokenManager,
       songsMixer: SongsMixer(),
