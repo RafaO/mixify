@@ -111,6 +111,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed && !_isAuthFlowActive) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        _checkAuth(); // Or your equivalent comprehensive check
+      });
       _checkAuth();
     }
   }
@@ -222,9 +225,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         _isAuthFlowActive = true;
       });
       authenticateWithSpotifyApp(
-        (token) {
+        (token) async {
           // onTokenReceived
-          widget._tokenManager.tokenReceived(token);
+          await widget._tokenManager.tokenReceived(token);
           if (mounted) {
             setState(() {
               authenticated = true;
