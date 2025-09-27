@@ -22,8 +22,8 @@ class TokenManager {
     spotifyToken = token;
   }
 
-  void tokenReceived(String token) {
-    saveTokenToStorage(token);
+  Future<void> tokenReceived(String token) async {
+    return saveTokenToStorage(token);
   }
 
   Future<bool> isTokenValid() async {
