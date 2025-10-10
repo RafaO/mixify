@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:mixafy/api_service.dart';
@@ -200,11 +201,23 @@ class _ItemsGridState extends State<ItemsGrid> {
                   if (context.mounted) Navigator.of(context).pop();
                   await Future.delayed(const Duration(milliseconds: 100));
                   if (!context.mounted) return;
-                  showMixafyDialog(
-                    context: context,
-                    title: 'Could not start',
-                    message: 'There was a problem playing your mix',
-                  );
+                  if (e is DioException &&
+                      e.response?.statusCode == 403 &&
+                      e.response?.data["error"]["reason"] ==
+                          "PREMIUM_REQUIRED") {
+                    debugPrint("premium required");
+                    showMixafyDialog(
+                      context: context,
+                      title: 'Premium required',
+                      message: 'Sorry, that only works for Spotify premium!',
+                    );
+                  } else {
+                    showMixafyDialog(
+                      context: context,
+                      title: 'Could not start',
+                      message: 'There was a problem playing your mix',
+                    );
+                  }
                 } finally {
                   if (context.mounted) setState(() => isLoading = false);
                 }
@@ -255,7 +268,8 @@ class _ItemsGridState extends State<ItemsGrid> {
 
     final mix = Mix(
       mixName: mixName,
-      userId: "me", // TODO
+      userId: "me",
+      // TODO
       items: items,
       includeSavedTracks: includeSavedTracks,
       timeRange: selectedTimeRange,
