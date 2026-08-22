@@ -3,207 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mixafy - Your ultimate Spotify playlist mixer! Create the perfect mix with customizable settings and enjoy seamless playback.">
-    <title>Mixafy - Spotify Playlist Mixer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Base styles */
-        body {
-            font-family: 'Inter', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #000;
-            color: #fff;
-        }
-
-        header {
-            background-color: #1db954;
-            color: #fff;
-            padding: 20px 0;
-            text-align: center;
-        }
-
-        header h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        header p {
-            font-size: 1.3rem;
-            font-weight: 400;
-            margin-top: 10px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            text-align: center;
-        }
-
-        section {
-            margin-top: 40px;
-        }
-
-        section h2 {
-            font-size: 2.2rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        section p {
-            font-size: 1.2rem;
-            font-weight: 400;
-            line-height: 1.6;
-        }
-
-        .feature-section {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            margin-top: 40px;
-        }
-
-        .feature {
-            background-color: #121212;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 20px;
-            flex: 1;
-            max-width: 300px;
-            text-align: center;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .feature:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8);
-        }
-
-        .feature img {
-            width: 120px;
-            margin-bottom: 15px;
-        }
-
-        .feature h3 {
-            font-size: 1.6rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #1db954;
-        }
-
-        .feature p {
-            font-size: 1rem;
-            font-weight: 400;
-            line-height: 1.5;
-        }
-
-        .cta {
-            margin-top: 50px;
-        }
-
-        .cta h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        .cta p {
-            font-size: 1.2rem;
-            font-weight: 400;
-        }
-
-        .download-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            align-items: center;
-            margin-top: 50px;
-        }
-
-        .download-button img {
-            height: 60px;
-            width: auto;
-            transition: transform 0.2s;
-        }
-
-        .download-button img:hover {
-            transform: scale(1.05);
-        }
-
-        footer {
-            background-color: #1db954;
-            color: #fff;
-            padding: 15px 0;
-            text-align: center;
-            margin-top: 50px;
-        }
-
-        footer p {
-            font-size: 0.9rem;
-            font-weight: 400;
-            margin: 0;
-        }
-    </style>
+    <meta name="description" content="Mixafy blends your Spotify playlists, artists, and liked songs into one seamless mix. Customize the time range and play it on any Spotify device.">
+    <meta name="theme-color" content="#070807">
+    <meta property="og:title" content="Mixafy — Spotify playlist mixer">
+    <meta property="og:description" content="Blend playlists, artists, and liked songs into one mix. Then play it anywhere Spotify plays.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mixafy.com">
+    <title>Mixafy — Mix your Spotify playlists</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Welcome to Mixafy</h1>
-        <p>Mix your Spotify playlists seamlessly and create the perfect vibe!</p>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="bg-glow" aria-hidden="true"></div>
+
+    <header class="site-header" id="site-header">
+        <nav class="nav" aria-label="Primary">
+            <a class="brand" href="index.html">
+                <svg width="32" height="32" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                    <rect width="64" height="64" rx="16" fill="#111413"/>
+                    <circle cx="26" cy="32" r="14" fill="#1DB954"/>
+                    <circle cx="38" cy="32" r="14" fill="#1ED760" fill-opacity="0.85"/>
+                    <circle cx="32" cy="32" r="5" fill="#111413"/>
+                </svg>
+                Mixafy
+            </a>
+            <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 7h16M4 12h16M4 17h16"/>
+                </svg>
+            </button>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How it works</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a class="nav-cta" href="#download">Get the app</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <div class="container">
-        <section>
-            <h2>About Mixafy</h2>
-            <p>Mixafy allows you to blend multiple Spotify playlists with custom settings. Whether you're creating a
-                party mix or curating the ultimate workout playlist, Mixafy gives you the tools to make it happen with
-                ease.</p>
+    <main id="main">
+        <div class="wrap">
+            <section class="hero">
+                <div>
+                    <div class="eyebrow"><span class="pulse"></span> Spotify playlist mixer</div>
+                    <h1>Blend every vibe into <span>one mix</span></h1>
+                    <p class="hero-copy">
+                        Mixafy combines your playlists, artists, and liked songs into a single stream —
+                        filtered by when you saved them, ready to play on any Spotify device.
+                    </p>
+                    <div class="download-buttons">
+                        <a class="download-button" href="https://apps.apple.com/us/app/mixafy/id6741485920" target="_blank" rel="noopener">
+                            <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1250467200"
+                                alt="Download on the App Store">
+                        </a>
+                        <a class="download-button" href="https://play.google.com/store/apps/details?id=com.keller.mixafy" target="_blank" rel="noopener">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                                alt="Get it on Google Play">
+                        </a>
+                    </div>
+                    <p class="hero-note">Free on iOS and Android. Connects with your Spotify account.</p>
+                </div>
+
+                <div class="hero-visual" aria-hidden="true">
+                    <div class="orb orb-1"></div>
+                    <div class="orb orb-2"></div>
+
+                    <div class="float-card float-1">
+                        <div class="cover" style="background: linear-gradient(135deg, #1ed760, #0b3d22);"></div>
+                        <div>
+                            <strong>Workout Hits</strong>
+                            <span>Playlist · 84 tracks</span>
+                        </div>
+                    </div>
+                    <div class="float-card float-2">
+                        <div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+                        <div>
+                            <strong>Now mixing</strong>
+                            <span>3 sources blended</span>
+                        </div>
+                    </div>
+                    <div class="float-card float-3">
+                        <div class="cover" style="background: linear-gradient(135deg, #7c5cff, #1a1333);"></div>
+                        <div>
+                            <strong>Late Night Jazz</strong>
+                            <span>Artist · last 3 months</span>
+                        </div>
+                    </div>
+
+                    <div class="phone">
+                        <div class="phone-notch"></div>
+                        <div class="phone-appbar">Mixafy</div>
+                        <div class="phone-body">
+                            <p class="phone-caption">Mixing songs added in the last…</p>
+                            <div class="chips">
+                                <div class="chip">1M</div>
+                                <div class="chip is-active">3M</div>
+                                <div class="chip">1Y</div>
+                                <div class="chip">All</div>
+                            </div>
+                            <div class="liked">♥ Include your liked songs</div>
+                            <div class="playlist">
+                                <div class="cover" style="background: linear-gradient(135deg, #ff5d73, #3a0d18);"></div>
+                                <div>
+                                    <strong>Friday Mix</strong>
+                                    <span>Playlist</span>
+                                </div>
+                            </div>
+                            <div class="playlist">
+                                <div class="cover" style="background: linear-gradient(135deg, #1ed760, #0b3d22);"></div>
+                                <div>
+                                    <strong>Workout Hits</strong>
+                                    <span>Playlist</span>
+                                </div>
+                            </div>
+                            <div class="playlist">
+                                <div class="cover" style="background: linear-gradient(135deg, #7c5cff, #1a1333);"></div>
+                                <div>
+                                    <strong>Late Night Jazz</strong>
+                                    <span>Artist</span>
+                                </div>
+                            </div>
+                            <div class="play-fab">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <section class="section" id="features">
+            <div class="wrap">
+                <div class="section-head">
+                    <h2>Built for how you actually listen</h2>
+                    <p>Stop hopping between playlists. Mixafy weaves them together so the next track still feels like you.</p>
+                </div>
+                <div class="features">
+                    <article class="feature">
+                        <div class="icon-wrap">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <circle cx="8" cy="12" r="5"/><circle cx="16" cy="12" r="5"/>
+                            </svg>
+                        </div>
+                        <h3>Blend sources</h3>
+                        <p>Pull tracks from playlists, artists, and liked songs into a single mix instead of shuffling one list at a time.</p>
+                    </article>
+                    <article class="feature">
+                        <div class="icon-wrap">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+                            </svg>
+                        </div>
+                        <h3>Time-range filters</h3>
+                        <p>Keep the mix fresh. Limit tracks to the last month, three months, year — or include everything.</p>
+                    </article>
+                    <article class="feature">
+                        <div class="icon-wrap">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.6-7 10-7 10z"/>
+                            </svg>
+                        </div>
+                        <h3>Liked songs, included</h3>
+                        <p>Fold in your saved tracks so favorites sit alongside the playlists you already love.</p>
+                    </article>
+                    <article class="feature">
+                        <div class="icon-wrap">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                        <h3>Play anywhere</h3>
+                        <p>Hit play and stream through Spotify — phone, speakers, or whatever device you already use.</p>
+                    </article>
+                    <article class="feature">
+                        <div class="icon-wrap">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V7h18v12a2 2 0 0 1-2 2z"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+                            </svg>
+                        </div>
+                        <h3>Save your mixes</h3>
+                        <p>Keep Friday-night, gym, or commute blends and reload them whenever the mood returns.</p>
+                    </article>
+                    <article class="feature">
+                        <div class="icon-wrap">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 12h8M12 8v8"/>
+                            </svg>
+                        </div>
+                        <h3>Spotify, instantly</h3>
+                        <p>Sign in once. Mixafy reads your library and starts mixing — no extra accounts to manage.</p>
+                    </article>
+                </div>
+            </div>
         </section>
 
-        <section class="feature-section">
-            <div class="feature">
-                <img src="img/custom-settings.webp" alt="Custom Settings">
-                <h3>Custom Settings</h3>
-                <p>Control how your playlists are mixed, from time ranges to mood-specific filters.</p>
-            </div>
-            <div class="feature">
-                <img src="img/integration.webp" alt="Seamless Integration">
-                <h3>Seamless Integration</h3>
-                <p>Connect directly to your Spotify account and start mixing instantly.</p>
-            </div>
-            <div class="feature">
-                <img src="img/play-anywhere.webp" alt="Play Anywhere">
-                <h3>Play Anywhere</h3>
-                <p>Stream your mixes to any Spotify-supported device effortlessly.</p>
-            </div>
-        </section>
-
-        <section class="cta">
-            <h2>Get Mixafy Now</h2>
-            <p>Available on both Android and iOS. Click below to download:</p>
-
-            <div class="download-buttons">
-                <!-- App Store -->
-                <a class="download-button" href="https://apps.apple.com/us/app/mixafy/id6741485920" target="_blank">
-                    <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1250467200"
-                        alt="Download on the App Store">
-                </a>
-
-                <!-- Google Play -->
-                <a class="download-button" href="https://play.google.com/store/apps/details?id=com.keller.mixafy"
-                    target="_blank">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
-                        alt="Get it on Google Play">
-                </a>
+        <section class="section" id="how-it-works" style="padding-top: 0;">
+            <div class="wrap">
+                <div class="section-head">
+                    <h2>Three steps to a better shuffle</h2>
+                    <p>Connect, pick what to blend, and let Mixafy build the queue.</p>
+                </div>
+                <div class="steps">
+                    <article class="step">
+                        <h3>Connect Spotify</h3>
+                        <p>Authenticate with your Spotify account so Mixafy can see the playlists and artists you already follow.</p>
+                    </article>
+                    <article class="step">
+                        <h3>Choose the blend</h3>
+                        <p>Select sources, set a time range, and decide whether liked songs join the mix.</p>
+                    </article>
+                    <article class="step">
+                        <h3>Press play</h3>
+                        <p>Mixafy weaves the tracks together and hands playback to Spotify on any connected device.</p>
+                    </article>
+                </div>
             </div>
         </section>
-    </div>
 
-    <footer>
-        <p>&copy; 2025 Mixafy. All rights reserved.</p>
+        <div class="wrap">
+            <section class="cta-band" id="download">
+                <h2>Ready for a mix that actually mixes?</h2>
+                <p>Download Mixafy and turn the playlists you already have into one continuous vibe.</p>
+                <div class="download-buttons" style="justify-content: center;">
+                    <a class="download-button" href="https://apps.apple.com/us/app/mixafy/id6741485920" target="_blank" rel="noopener">
+                        <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1250467200"
+                            alt="Download on the App Store">
+                    </a>
+                    <a class="download-button" href="https://play.google.com/store/apps/details?id=com.keller.mixafy" target="_blank" rel="noopener">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                            alt="Get it on Google Play">
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="wrap footer-inner">
+            <p>&copy; 2026 Mixafy. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="privacy.html">Privacy</a>
+                <a href="contact.html">Contact</a>
+            </div>
+        </div>
     </footer>
+
+    <script>
+        const header = document.getElementById('site-header');
+        const toggle = document.querySelector('.menu-toggle');
+        const links = document.getElementById('nav-links');
+
+        const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+
+        toggle.addEventListener('click', () => {
+            const open = links.classList.toggle('is-open');
+            toggle.setAttribute('aria-expanded', String(open));
+            toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        });
+
+        links.querySelectorAll('a').forEach((link) => {
+            link.addEventListener('click', () => {
+                links.classList.remove('is-open');
+                toggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+    </script>
 </body>
 </html>
