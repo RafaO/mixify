@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 final String clientId = dotenv.env['spotify_client_id'] ?? '';
 final String clientSecret = dotenv.env['spotify_client_secret'] ?? '';
